@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
     unbound-mailcow:
-      image: mailcow/unbound:1.7
+      image: mailcow/unbound:1.8
       build: ./data/Dockerfiles/unbound
       command: /usr/sbin/unbound
       environment:
@@ -30,8 +30,6 @@ services:
         - MYSQL_USER=${DBUSER}
         - MYSQL_PASSWORD=${DBPASS}
       restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       ports:
         - "${SQL_PORT:-127.0.0.1:13306}:3306"
       networks:
@@ -46,8 +44,6 @@ services:
       restart: always
       environment:
         - TZ=${TZ}
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.249
@@ -55,23 +51,23 @@ services:
             - redis
 
     clamd-mailcow:
-      image: mailcow/clamd:1.22
+      image: mailcow/clamd:1.28
       build: ./data/Dockerfiles/clamd
       restart: always
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - TZ=${TZ}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
       volumes:
         - ./data/conf/clamav/:/etc/clamav/
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.42
+      image: mailcow/rspamd:1.46
       build: ./data/Dockerfiles/rspamd
       stop_grace_period: 30s
       depends_on:
@@ -98,7 +94,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.37
+      image: mailcow/phpfpm:1.44
       build: ./data/Dockerfiles/phpfpm
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
@@ -116,6 +112,8 @@ services:
         - ./data/conf/phpfpm/php-conf.d/upload.ini:/usr/local/etc/php/conf.d/upload.ini
         - ./data/conf/phpfpm/php-conf.d/other.ini:/usr/local/etc/php/conf.d/zzz-other.ini
         - ./data/assets/templates:/tpls
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
@@ -137,15 +135,13 @@ services:
         - SKIP_SOLR=${SKIP_SOLR:-y}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
       restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.54
+      image: mailcow/sogo:1.61
       build: ./data/Dockerfiles/sogo
       environment:
         - DBNAME=${DBNAME}
@@ -157,6 +153,9 @@ services:
         - ACL_ANYONE=${ACL_ANYONE:-disallow}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
+        - SOGO_EXPIRE_SESSION=${SOGO_EXPIRE_SESSION:-480}
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/web/inc/init_db.inc.php:/init_db.inc.php
@@ -164,8 +163,6 @@ services:
         - mysql-socket-vol-1:/var/run/mysqld/
         - sogo-web-vol-1:/sogo_web
       restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           ipv4_address: ${IPV4_NETWORK:-172.22.1}.248
@@ -173,12 +170,14 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.74
+      image: mailcow/dovecot:1.89
       build: ./data/Dockerfiles/dovecot
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       cap_add:
         - NET_BIND_SERVICE
       volumes:
-        - ./data/conf/dovecot:/usr/local/etc/dovecot
+        - ./data/conf/dovecot:/etc/dovecot
         - ./data/assets/ssl:/etc/ssl/mail/:ro
         - ./data/conf/sogo/:/etc/sogo/
         - ./data/conf/phpfpm/sogo-sso/:/etc/phpfpm/
@@ -195,6 +194,7 @@ services:
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
         - TZ=${TZ}
+        - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - MAILDIR_GC_TIME=${MAILDIR_GC_TIME:-1440}
@@ -215,8 +215,6 @@ services:
         nofile:
           soft: 20000
           hard: 40000
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       hostname: ${MAILCOW_HOSTNAME}
       networks:
         mailcow-network:
@@ -225,7 +223,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.31
+      image: mailcow/postfix:1.39
       build: ./data/Dockerfiles/postfix
       volumes:
         - ./data/conf/postfix:/opt/postfix/conf
@@ -258,8 +256,8 @@ services:
     memcached-mailcow:
       image: memcached:alpine
       restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
+      environment:
+        - TZ=${TZ}
       networks:
         mailcow-network:
           aliases:
@@ -271,6 +269,8 @@ services:
         - php-fpm-mailcow
         - redis-mailcow
       image: nginx:mainline-alpine
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       command: /bin/sh -c "envsubst < /etc/nginx/conf.d/templates/listen_plain.template > /etc/nginx/conf.d/listen_plain.active &&
         envsubst < /etc/nginx/conf.d/templates/listen_ssl.template > /etc/nginx/conf.d/listen_ssl.active &&
         envsubst < /etc/nginx/conf.d/templates/server_name.template > /etc/nginx/conf.d/server_name.active &&
@@ -301,8 +301,6 @@ services:
         - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
         - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
@@ -311,7 +309,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.56
+      image: mailcow/acme:1.61
       build: ./data/Dockerfiles/acme
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
@@ -340,7 +338,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.25
+      image: mailcow/netfilter:1.28
       build: ./data/Dockerfiles/netfilter
       stop_grace_period: 30s
       depends_on:
@@ -358,16 +356,16 @@ services:
         - SNAT_TO_SOURCE=${SNAT_TO_SOURCE:-n}
         - SNAT6_TO_SOURCE=${SNAT6_TO_SOURCE:-n}
       network_mode: "host"
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.42
+      image: mailcow/watchdog:1.58
       # Debug
       #command: /watchdog.sh
       build: ./data/Dockerfiles/watchdog
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
         - rspamd-vol-1:/var/lib/rspamd
         - mysql-socket-vol-1:/var/run/mysqld/
@@ -381,6 +379,7 @@ services:
         - DBPASS=${DBPASS}
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
+        - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}
@@ -388,37 +387,36 @@ services:
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
         - HTTPS_PORT=${HTTPS_PORT:-443}
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
       networks:
         mailcow-network:
           aliases:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:1.30
+      image: mailcow/dockerapi:1.32
       restart: always
       build: ./data/Dockerfiles/dockerapi
       oom_kill_disable: true
+      dns:
+        - ${IPV4_NETWORK:-172.22.1}.254
       environment:
         - DBROOT=${DBROOT}
         - TZ=${TZ}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
-        - ./data/conf/rspamd/override.d/worker-controller-password.inc:/access.inc:rw
       networks:
         mailcow-network:
           aliases:
             - dockerapi
 
     solr-mailcow:
-      image: mailcow/solr:1.5
+      image: mailcow/solr:1.6
       build: ./data/Dockerfiles/solr
       restart: always
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
+      ports:
+        - "${SOLR_PORT:-127.0.0.1:18983}:8983"
       environment:
         - TZ=${TZ}
         - SOLR_HEAP=${SOLR_HEAP:-1024}
@@ -427,6 +425,25 @@ services:
         mailcow-network:
           aliases:
             - solr
+
+    olefy-mailcow:
+      image: mailcow/olefy:1.1
+      restart: always
+      build: ./data/Dockerfiles/olefy
+      environment:
+        - TZ=${TZ}
+        - OLEFY_BINDADDRESS=0.0.0.0
+        - OLEFY_BINDPORT=10055
+        - OLEFY_TMPDIR=/tmp
+        - OLEFY_PYTHON_PATH=/usr/bin/python3
+        - OLEFY_OLEVBA_PATH=/usr/bin/olevba3
+        - OLEFY_LOGLVL=20
+        - OLEFY_MINLENGTH=500
+        - OLEFY_DEL_TMP=1
+      networks:
+        mailcow-network:
+          aliases:
+            - olefy
 
     ipv6nat-mailcow:
       depends_on:
@@ -446,6 +463,8 @@ services:
         - watchdog-mailcow
         - dockerapi-mailcow
         - solr-mailcow
+      environment:
+        - TZ=${TZ}
       image: robbertkl/ipv6nat
       restart: always
       privileged: true

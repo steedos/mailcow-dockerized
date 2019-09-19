@@ -552,8 +552,8 @@ function update_sogo_static_view() {
     WHERE TABLE_NAME = 'sogo_view'");
   $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
   if ($num_results != 0) {
-    $stmt = $pdo->query("REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `kind`, `multiple_bookings`)
-      SELECT `c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `kind`, `multiple_bookings` from sogo_view");
+    $stmt = $pdo->query("REPLACE INTO _sogo_static_view (`c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings`)
+      SELECT `c_uid`, `domain`, `c_name`, `c_password`, `c_cn`, `mail`, `aliases`, `ad_aliases`, `ext_acl`, `kind`, `multiple_bookings` from sogo_view");
     $stmt = $pdo->query("DELETE FROM _sogo_static_view WHERE `c_uid` NOT IN (SELECT `username` FROM `mailbox` WHERE `active` = '1');");
   }
   flush_memcached();
@@ -1223,6 +1223,69 @@ function admin_api($action, $data = null) {
 		'msg' => 'admin_api_modified'
 	);
 }
+function license($action, $data = null) {
+	global $pdo;
+	global $redis;
+	global $lang;
+	if ($_SESSION['mailcow_cc_role'] != "admin") {
+		$_SESSION['return'][] =  array(
+			'type' => 'danger',
+      'log' => array(__FUNCTION__),
+			'msg' => 'access_denied'
+		);
+		return false;
+	}
+	switch ($action) {
+		case "verify":
+      // Keep result until revalidate button is pressed or session expired
+      $stmt = $pdo->query("SELECT `version` FROM `versions` WHERE `application` = 'GUID'");
+      $versions = $stmt->fetch(PDO::FETCH_ASSOC);
+      $post = array('guid' => $versions['version']);
+      $curl = curl_init('https://verify.mailcow.email');
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+      $response = curl_exec($curl);
+      curl_close($curl);
+      $json_return = json_decode($response, true);
+      if ($response && $json_return) {
+        if ($json_return['response'] === "ok") {
+          $_SESSION['gal']['valid'] = "true";
+          $_SESSION['gal']['c'] = $json_return['c'];
+          $_SESSION['gal']['s'] = $json_return['s'];
+                  }
+        elseif ($json_return['response'] === "invalid") {
+          $_SESSION['gal']['valid'] = "false";
+          $_SESSION['gal']['c'] = $lang['mailbox']['no'];
+          $_SESSION['gal']['s'] = $lang['mailbox']['no'];
+        }
+      }
+      else {
+        $_SESSION['gal']['valid'] = "false";
+        $_SESSION['gal']['c'] = $lang['danger']['temp_error'];
+        $_SESSION['gal']['s'] = $lang['danger']['temp_error'];
+      }
+      try {
+        // json_encode needs "true"/"false" instead of true/false, to not encode it to 0 or 1
+        $redis->Set('LICENSE_STATUS_CACHE', json_encode($_SESSION['gal']));
+      }
+      catch (RedisException $e) {
+        $_SESSION['return'][] = array(
+          'type' => 'danger',
+          'log' => array(__FUNCTION__, $_action, $_data_log),
+          'msg' => array('redis_error', $e)
+        );
+        return false;
+      }
+      return $_SESSION['gal']['valid'];
+    break;
+    case "guid":
+      $stmt = $pdo->query("SELECT `version` FROM `versions` WHERE `application` = 'GUID'");
+      $versions = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $versions['version'];
+    break;
+  }
+}
 function rspamd_ui($action, $data = null) {
 	global $lang;
 	if ($_SESSION['mailcow_cc_role'] != "admin") {
@@ -1511,16 +1574,34 @@ function solr_status() {
   curl_setopt($curl, CURLOPT_URL, $url);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($curl, CURLOPT_POST, 0);
-  curl_setopt($curl, CURLOPT_TIMEOUT, 20);
-  $response = curl_exec($curl);
-  if ($response === false) {
+  curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+  $response_core = curl_exec($curl);
+  if ($response_core === false) {
     $err = curl_error($curl);
     curl_close($curl);
     return false;
   }
   else {
     curl_close($curl);
-    $status = json_decode($response, true);
+    $curl = curl_init();
+    $status_core = json_decode($response_core, true);
+    $url = 'http://solr:8983/solr/admin/info/system';
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_POST, 0);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+    $response_sysinfo = curl_exec($curl);
+    if ($response_sysinfo === false) {
+      $err = curl_error($curl);
+      curl_close($curl);
+      return false;
+    }
+    else {
+      curl_close($curl);
+      $status_sysinfo = json_decode($response_sysinfo, true);
+      $status = array_merge($status_core, $status_sysinfo);
+      return (!empty($status['status']['dovecot-fts']) && !empty($status['jvm']['memory'])) ? $status : false;
+    }
     return (!empty($status['status']['dovecot-fts'])) ? $status['status']['dovecot-fts'] : false;
   }
   return false;

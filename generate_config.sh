@@ -2,6 +2,12 @@
 
 set -o pipefail
 
+if [[ "$(uname -r)" =~ ^4\.15\.0-60 ]]; then
+  echo "DO NOT RUN mailcow ON THIS UBUNTU KERNEL!";
+  echo "Please update to 5.x or use another distribution."
+  exit 1
+fi
+
 if grep --help 2>&1 | grep -q -i "busybox"; then
   echo "BusybBox grep detected, please install gnu grep, \"apk add --no-cache --upgrade grep\""
   exit 1
@@ -116,6 +122,8 @@ DBROOT=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 | head -c 28)
 # ------------------------------
 
 # You should use HTTPS, but in case of SSL offloaded reverse proxies:
+# Might be important: This will also change the binding within the container.
+# If you use a proxy within Docker, point it to the ports you set below.
 
 HTTP_PORT=80
 HTTP_BIND=0.0.0.0
@@ -140,6 +148,7 @@ POPS_PORT=995
 SIEVE_PORT=4190
 DOVEADM_PORT=127.0.0.1:19991
 SQL_PORT=127.0.0.1:13306
+SOLR_PORT=127.0.0.1:18983
 
 # Your timezone
 
@@ -195,10 +204,12 @@ SKIP_HTTP_VERIFICATION=n
 SKIP_CLAMD=${SKIP_CLAMD}
 
 # Skip Solr on low-memory systems or if you do not want to store a readable index of your mails in solr-vol-1.
+
 SKIP_SOLR=${SKIP_SOLR}
 
 # Solr heap size in MB, there is no recommendation, please see Solr docs.
 # Solr is a prone to run OOM and should be monitored. Unmonitored Solr setups are not recommended.
+
 SOLR_HEAP=1024
 
 # Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
@@ -214,6 +225,9 @@ ALLOW_ADMIN_EMAIL_LOGIN=n
 
 #WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
 #WATCHDOG_NOTIFY_EMAIL=
+
+# Notify about banned IP (includes whois lookup)
+WATCHDOG_NOTIFY_BAN=y
 
 # Max log lines per service to keep in Redis logs
 
@@ -244,6 +258,9 @@ IPV6_NETWORK=fd4d:6169:6c63:6f77::/64
 
 # mail_home is ~/Maildir
 MAILDIR_SUB=Maildir
+
+# SOGo session timeout in minutes
+SOGO_EXPIRE_SESSION=480
 
 EOF
 

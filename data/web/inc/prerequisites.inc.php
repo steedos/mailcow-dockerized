@@ -41,7 +41,15 @@ $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 
 // Redis
 $redis = new Redis();
-$redis->connect('redis-mailcow', 6379);
+try {
+  $redis->connect('redis-mailcow', 6379);
+}
+catch (Exception $e) {
+?>
+<center style='font-family:sans-serif;'>Connection to Redis failed.<br /><br />The following error was reported:<br/><?=$e->getMessage();?></center>
+<?php
+exit;
+}
 
 // PDO
 // Calculate offset
@@ -183,4 +191,3 @@ if (isset($_SESSION['mailcow_cc_role'])) {
   acl('to_session');
 }
 $UI_TEXTS = customize('get', 'ui_texts');
-
