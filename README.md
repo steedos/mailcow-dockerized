@@ -42,5 +42,14 @@ docker-compose restart memcached-mailcow sogo-mailcow
 
 修改后重启服务
 ```
-docker-compose restart sogo-mailcow
+docker-compose up -d
+```
+
+
+### 5. 配置creator_url
+打开服务器项目根路径下的mailcow.conf,在最后一行添加CREATOR_URL=http://127.0.0.1:5000 (设置当前creator服务的root_url)
+
+修改后重启服务
+```
+docker-compose up -d
 ```
