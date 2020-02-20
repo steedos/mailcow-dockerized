@@ -165,6 +165,7 @@ services:
         - mysql-socket-vol-1:/var/run/mysqld/
         - sogo-web-vol-1:/sogo_web
         - ./sogo/ChineseChina.lproj/Localizable.strings:/sogo_web/PreferencesUI.SOGo/Resources/ChineseChina.lproj/Localizable.strings
+        - ./sogo/ChineseChina.lproj/Localizable.strings:/usr/lib/GNUstep/SOGo/PreferencesUI.SOGo/Resources/ChineseChina.lproj/Localizable.strings
       restart: always
       networks:
         mailcow-network:
