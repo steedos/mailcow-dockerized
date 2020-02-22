@@ -70,3 +70,10 @@ if(selectUsersService){
     addStyles();
     addBodyListener();
 }
+
+//处理在当前窗口删除邮件报错问题
+try {
+    window.opener.location.href;
+} catch (error) {
+    window.opener = null;
+}
