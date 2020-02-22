@@ -6,6 +6,9 @@
 // Enable scayt by default
 //CKEDITOR.config.scayt_autoStartup = true;
 
+//设置语言为简体中文
+CKEDITOR.lang.detect('zh-cn');
+
 //组织选人服务地址
 var selectUsersService = "";
 
