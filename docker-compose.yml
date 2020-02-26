@@ -420,6 +420,8 @@ services:
       restart: always
       volumes:
         - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
+        - ./data/Dockerfiles/solr/solr-schema-7.7.0.xml:/opt/solr/server/solr/dovecot-fts/conf/managed-schema
+        - ./data/Dockerfiles/solr/lucene-analyzers-smartcn-7.7.2.jar:/opt/solr/server/solr-webapp/webapp/WEB-INF/lib/lucene-analyzers-smartcn-7.7.2.jar
       ports:
         - "${SOLR_PORT:-127.0.0.1:18983}:8983"
       environment:
