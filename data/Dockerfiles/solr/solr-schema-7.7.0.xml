@@ -46,11 +46,11 @@
   <field name="hdr" type="text" indexed="true" stored="false"/>
   <field name="body" type="solr_cnAnalyzer" indexed="true" stored="false"/>
 
-  <field name="from" type="text" indexed="true" stored="false"/>
-  <field name="to" type="text" indexed="true" stored="false"/>
-  <field name="cc" type="text" indexed="true" stored="false"/>
-  <field name="bcc" type="text" indexed="true" stored="false"/>
-  <field name="subject" type="text" indexed="true" stored="false"/>
+  <field name="from" type="solr_cnAnalyzer" indexed="true" stored="false"/>
+  <field name="to" type="solr_cnAnalyzer" indexed="true" stored="false"/>
+  <field name="cc" type="solr_cnAnalyzer" indexed="true" stored="false"/>
+  <field name="bcc" type="solr_cnAnalyzer" indexed="true" stored="false"/>
+  <field name="subject" type="solr_cnAnalyzer" indexed="true" stored="false"/>
 
   <!-- Used by Solr internally: -->
   <field name="_version_" type="long" indexed="true" stored="true"/>
