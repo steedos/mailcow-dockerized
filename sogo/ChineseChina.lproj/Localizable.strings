@@ -155,6 +155,7 @@
 "Show subscribed mailboxes only" = "仅显示订阅的邮箱";
 "Synchronize only default mail folders (EAS)" = "仅同步系统默认邮箱文件夹";
 "Sort messages by threads" = "邮件按线索排序";
+"Fetch count of unseen messages for all mailboxes" = "显示所有邮箱未读邮件数";
 "Always open mail composer" = "总是打开邮件编辑器";
 "Inside current window" = "在当前窗口内";
 "In a popup window" = "在弹出窗口中";
@@ -433,3 +434,11 @@
 /* Limited Animation Mode */
 "animation_LIMITED" = "受限";
 "animation_NONE" = "无";
+
+/* Search Mail*/
+"Enter Subject" = "输入主题";
+"Enter From" = "输入发件人";
+"Enter To" = "输入收件人";
+"Enter Cc" = "输入抄送者";
+"Enter Body" = "输入正文";
+"match" = "匹配";
