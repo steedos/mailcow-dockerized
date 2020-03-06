@@ -435,10 +435,11 @@
 "animation_LIMITED" = "受限";
 "animation_NONE" = "无";
 
-/* Search Mail*/
+/* Advanced search */
 "Enter Subject" = "输入主题";
 "Enter From" = "输入发件人";
 "Enter To" = "输入收件人";
 "Enter Cc" = "输入抄送者";
 "Enter Body" = "输入正文";
-"match" = "匹配";
+"match" = "符合";
+"does not match" = "不符合";
