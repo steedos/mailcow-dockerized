@@ -142,8 +142,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.71
-      build: ./data/Dockerfiles/sogo
+      image: mailcow/sogo:1.83
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -155,7 +154,10 @@ services:
         - ALLOW_ADMIN_EMAIL_LOGIN=${ALLOW_ADMIN_EMAIL_LOGIN:-n}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - SOGO_EXPIRE_SESSION=${SOGO_EXPIRE_SESSION:-480}
-        - CREATOR_URL=${CREATOR_URL:-127.0.0.1:5000}
+        - SKIP_SOGO=${SKIP_SOGO:-n}
+        - MASTER=${MASTER:-y}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
@@ -165,10 +167,11 @@ services:
         - ./data/conf/sogo/theme.js:/usr/lib/GNUstep/SOGo/WebServerResources/js/theme.js
         - ./data/conf/sogo/theme-default.css:/usr/lib/GNUstep/SOGo/WebServerResources/css/theme-default.css
         - ./sogo/UI/MailerUI/UIxMailEditor.wox/:/usr/lib/GNUstep/SOGo/Templates/MailerUI/UIxMailEditor.wox
-        - mysql-socket-vol-1:/var/run/mysqld/
-        - sogo-web-vol-1:/sogo_web
         - ./sogo/ChineseChina.lproj/Localizable.strings:/usr/lib/GNUstep/SOGo/PreferencesUI.SOGo/Resources/ChineseChina.lproj/Localizable.strings
         - ./sogo/UI/MailerUI/ChineseChina.lproj/Localizable.strings:/usr/lib/GNUstep/SOGo/MailerUI.SOGo/Resources/ChineseChina.lproj/Localizable.strings
+        - mysql-socket-vol-1:/var/run/mysqld/
+        - sogo-web-vol-1:/sogo_web
+        - sogo-userdata-backup-vol-1:/sogo_backup
       restart: always
       networks:
         mailcow-network:
