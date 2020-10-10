@@ -511,3 +511,4 @@ volumes:
   postfix-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
+  sogo-userdata-backup-vol-1:
