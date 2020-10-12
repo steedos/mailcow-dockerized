@@ -371,33 +371,61 @@ services:
         - /lib/modules:/lib/modules:ro
 
     watchdog-mailcow:
-      image: mailcow/watchdog:1.58
+      image: mailcow/watchdog:1.85
       # Debug
       #command: /watchdog.sh
-      build: ./data/Dockerfiles/watchdog
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       volumes:
-        - rspamd-vol-1:/var/lib/rspamd
-        - mysql-socket-vol-1:/var/run/mysqld/
-        - ./data/assets/ssl:/etc/ssl/mail/:ro
+        - rspamd-vol-1:/var/lib/rspamd:z
+        - mysql-socket-vol-1:/var/run/mysqld/:z
+        - postfix-vol-1:/var/spool/postfix:z
+        - ./data/assets/ssl:/etc/ssl/mail/:ro,z
       restart: always
       environment:
+        - IPV6_NETWORK=${IPV6_NETWORK:-fd4d:6169:6c63:6f77::/64}
         - LOG_LINES=${LOG_LINES:-9999}
         - TZ=${TZ}
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
         - DBPASS=${DBPASS}
+        - DBROOT=${DBROOT}
         - USE_WATCHDOG=${USE_WATCHDOG:-n}
         - WATCHDOG_NOTIFY_EMAIL=${WATCHDOG_NOTIFY_EMAIL}
         - WATCHDOG_NOTIFY_BAN=${WATCHDOG_NOTIFY_BAN:-y}
+        - WATCHDOG_EXTERNAL_CHECKS=${WATCHDOG_EXTERNAL_CHECKS:-n}
+        - WATCHDOG_MYSQL_REPLICATION_CHECKS=${WATCHDOG_MYSQL_REPLICATION_CHECKS:-n}
         - MAILCOW_HOSTNAME=${MAILCOW_HOSTNAME}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-mailcow-dockerized}
         - IPV4_NETWORK=${IPV4_NETWORK:-172.22.1}
         - IP_BY_DOCKER_API=${IP_BY_DOCKER_API:-0}
         - CHECK_UNBOUND=${CHECK_UNBOUND:-1}
         - SKIP_CLAMD=${SKIP_CLAMD:-n}
         - SKIP_LETS_ENCRYPT=${SKIP_LETS_ENCRYPT:-n}
+        - SKIP_SOGO=${SKIP_SOGO:-n}
         - HTTPS_PORT=${HTTPS_PORT:-443}
+        - REDIS_SLAVEOF_IP=${REDIS_SLAVEOF_IP:-}
+        - REDIS_SLAVEOF_PORT=${REDIS_SLAVEOF_PORT:-}
+        - EXTERNAL_CHECKS_THRESHOLD=1
+        - NGINX_THRESHOLD=5
+        - UNBOUND_THRESHOLD=5
+        - REDIS_THRESHOLD=5
+        - MYSQL_THRESHOLD=5
+        - MYSQL_REPLICATION_THRESHOLD=1
+        - SOGO_THRESHOLD=3
+        - POSTFIX_THRESHOLD=8
+        - CLAMD_THRESHOLD=15
+        - DOVECOT_THRESHOLD=12
+        - DOVECOT_REPL_THRESHOLD=20
+        - PHPFPM_THRESHOLD=5
+        - RATELIMIT_THRESHOLD=1
+        - FAIL2BAN_THRESHOLD=1
+        - ACME_THRESHOLD=1
+        - IPV6NAT_THRESHOLD=1
+        - RSPAMD_THRESHOLD=5
+        - OLEFY_THRESHOLD=5
+        - MAILQ_THRESHOLD=20
+        - MAILQ_CRIT=30
       networks:
         mailcow-network:
           aliases:
