@@ -1,4 +1,11 @@
 <?php
+
+// Slave does not serve UI
+/* if (!preg_match('/y|yes/i', getenv('MASTER'))) {
+  header('Location: /SOGo', true, 307);
+  exit;
+}*/
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
 $default_autodiscover_config = $autodiscover_config;
 
@@ -19,16 +26,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 // Load Sieve
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/sieve/SieveParser.php';
 
+// minifierExtended
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/JSminifierExtended.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/CSSminifierExtended.php';
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/array_merge_real.php';
+
 // Minify JS
 use MatthiasMullie\Minify;
-$js_minifier = new Minify\JS();
+$js_minifier = new JSminifierExtended();
 $js_dir = array_diff(scandir('/web/js/build'), array('..', '.'));
 foreach ($js_dir as $js_file) {
   $js_minifier->add('/web/js/build/' . $js_file);
 }
 
 // Minify CSS
-$css_minifier = new Minify\CSS();
+$css_minifier = new CSSminifierExtended();
 $css_dir = array_diff(scandir('/web/css/build'), array('..', '.'));
 foreach ($css_dir as $css_file) {
   $css_minifier->add('/web/css/build/' . $css_file);
@@ -42,7 +55,12 @@ $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
 // Redis
 $redis = new Redis();
 try {
-  $redis->connect('redis-mailcow', 6379);
+  if (!empty(getenv('REDIS_SLAVEOF_IP'))) {
+    $redis->connect(getenv('REDIS_SLAVEOF_IP'), getenv('REDIS_SLAVEOF_PORT'));
+  }
+  else {
+    $redis->connect('redis-mailcow', 6379);
+  }
 }
 catch (Exception $e) {
 ?>
@@ -86,6 +104,35 @@ if (fsockopen("tcp://dockerapi", 443, $errno, $errstr) === false) {
 exit;
 }
 
+// OAuth2
+class mailcowPdo extends OAuth2\Storage\Pdo {
+  public function __construct($connection, $config = array()) {
+    parent::__construct($connection, $config);
+    $this->config['user_table'] = 'mailbox';
+  }
+  public function checkUserCredentials($username, $password) {
+    if (check_login($username, $password) == 'user') {
+      return true;
+    }
+    return false;
+  }
+  public function getUserDetails($username) {
+    return $this->getUser($username);
+  }
+}
+$oauth2_scope_storage = new OAuth2\Storage\Memory(array('default_scope' => 'profile', 'supported_scopes' => array('profile')));
+$oauth2_storage = new mailcowPdo(array('dsn' => $dsn, 'username' => $database_user, 'password' => $database_pass));
+$oauth2_server = new OAuth2\Server($oauth2_storage, array(
+    'refresh_token_lifetime'         => $REFRESH_TOKEN_LIFETIME,
+    'access_lifetime'                => $ACCESS_TOKEN_LIFETIME,
+));
+$oauth2_server->setScopeUtil(new OAuth2\Scope($oauth2_scope_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\AuthorizationCode($oauth2_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\UserCredentials($oauth2_storage));
+$oauth2_server->addGrantType(new OAuth2\GrantType\RefreshToken($oauth2_storage, array(
+    'always_issue_new_refresh_token' => true
+)));
+
 function exception_handler($e) {
     if ($e instanceof PDOException) {
       $_SESSION['return'][] = array(
@@ -109,7 +156,7 @@ set_exception_handler('exception_handler');
 // TODO: Move function
 function get_remote_ip($anonymize = null) {
   global $ANONYMIZE_IPS;
-  if ($anonymize === null) { 
+  if ($anonymize === null) {
     $anonymize = $ANONYMIZE_IPS;
   }
   elseif ($anonymize !== true && $anonymize !== false)  {
@@ -132,6 +179,8 @@ function get_remote_ip($anonymize = null) {
   }
 }
 
+// Load core functions first
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/sessions.inc.php';
 
 // IMAP lib
@@ -158,10 +207,18 @@ if (isset($_GET['lang']) && in_array($_GET['lang'], $AVAILABLE_LANGUAGES)) {
   setcookie("mailcow_locale", $_GET['lang'], time()+30758400); // one year
 }
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.php';
-include $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.inc.php';
+/*
+ * load language
+ */
+$lang = json_decode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/lang/lang.en.json'), true);
+
+$langFile = $_SERVER['DOCUMENT_ROOT'] . '/lang/lang.'.$_SESSION['mailcow_locale'].'.json';
+if(file_exists($langFile)) {
+  $lang = array_merge_real($lang, json_decode(file_get_contents($langFile), true));
+}
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.acl.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.app_passwd.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.customize.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.address_rewriting.inc.php';
@@ -173,12 +230,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailq.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.pushover.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rsettings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rspamd.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.tls_policy_maps.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.presets.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();

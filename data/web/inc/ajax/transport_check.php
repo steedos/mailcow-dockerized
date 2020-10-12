@@ -1,6 +1,9 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/prerequisites.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/vars.inc.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 error_reporting(0);
 if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admin") {
@@ -23,9 +26,37 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
   if (!empty($transport_details)) {
     // Remove [ and ]
     $hostname_w_port = preg_replace('/\[|\]/', '', $nexthop);
+    preg_match('/\[.+\](:.+)/', $nexthop, $hostname_port_match);
+    preg_match('/\[\d\.\d\.\d\.\d\](:.+)/', $nexthop, $ipv4_port_match);
+    $has_bracket_and_port = (isset($hostname_port_match[1])) ? true : false;
+    $is_ipv4_and_has_port = (isset($ipv4_port_match[1])) ? true : false;
     $skip_lookup_mx = strpos($nexthop, '[');
     // Explode to hostname and port
-    list($hostname, $port) = explode(':', $hostname_w_port);
+    if ($has_bracket_and_port) {
+      $port = substr($hostname_w_port, strrpos($hostname_w_port, ':') + 1);
+      $hostname = preg_replace('/'. preg_quote(':' . $port, '/') . '$/', '', $hostname_w_port);
+      if (filter_var($hostname, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        $hostname = '[' . $hostname . ']:';
+      }
+    }
+    else {
+      if ($is_ipv4_and_has_port) {
+        $port = substr($hostname_w_port, strrpos($hostname_w_port, ':') + 1);
+        $hostname = preg_replace('/'. preg_quote(':' . $port, '/') . '$/', '', $hostname_w_port);
+      }
+      if (filter_var($hostname_w_port, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        $hostname = $hostname_w_port;
+        $port = null;
+      }
+      elseif (filter_var($hostname_w_port, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        $hostname = '[' . $hostname_w_port . ']';
+        $port = null;
+      }
+      else {
+        $hostname = preg_replace('/'. preg_quote(':' . $port, '/') . '$/', '', $hostname_w_port);
+        $port = null;
+      }
+    }
     // Try to get MX if host is not [host]
     if ($skip_lookup_mx === false) {
       getmxrr($hostname, $mx_records, $mx_weight);
@@ -49,7 +80,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
     $password = $transport_details['password'];
 
     $mail = new PHPMailer;
-    $mail->Timeout = 10;
+    $mail->Timeout = 15;
     $mail->SMTPOptions = array(
       'ssl' => array(
         'verify_peer' => false,

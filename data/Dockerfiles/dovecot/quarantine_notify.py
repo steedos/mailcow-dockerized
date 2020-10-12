@@ -66,10 +66,11 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl):
   else:
     with open('/templates/quarantine.tpl') as file_:
       template = Template(file_.read())
-  html = template.render(meta=meta_query, counter=msg_count, hostname=socket.gethostname(), quarantine_acl=quarantine_acl)
+  html = template.render(meta=meta_query, username=rcpt, counter=msg_count, hostname=socket.gethostname(), quarantine_acl=quarantine_acl)
   text = html2text.html2text(html)
   count = 0
   while count < 15:
+    count += 1
     try:
       server = smtplib.SMTP('postfix', 590, 'quarantine')
       server.ehlo()
@@ -84,8 +85,19 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl):
       msg.attach(text_part)
       msg.attach(html_part)
       msg['To'] = str(rcpt)
+      bcc = r.get('Q_BCC') or ""
+      redirect = r.get('Q_REDIRECT') or ""
       text = msg.as_string()
-      server.sendmail(msg['From'], msg['To'], text)
+      if bcc == '':
+        if redirect == '':
+          server.sendmail(msg['From'], str(rcpt), text)
+        else:
+          server.sendmail(msg['From'], str(redirect), text)
+      else:
+        if redirect == '':
+          server.sendmail(msg['From'], [str(rcpt)] + [str(bcc)], text)
+        else:
+          server.sendmail(msg['From'], [str(redirect)] + [str(bcc)], text)
       server.quit()
       for res in meta_query:
         query_mysql('UPDATE quarantine SET notified = 1 WHERE id = "%d"' % (res['id']), update = True)
@@ -96,7 +108,13 @@ def notify_rcpt(rcpt, msg_count, quarantine_acl):
       print('%s'  % (ex))
       time.sleep(3)
 
-records = query_mysql('SELECT IFNULL(user_acl.quarantine, 0) AS quarantine_acl, count(id) AS counter, rcpt FROM quarantine LEFT OUTER JOIN user_acl ON user_acl.username = rcpt WHERE notified = 0 AND rcpt in (SELECT username FROM mailbox) GROUP BY rcpt')
+records = query_mysql("""
+SELECT IFNULL(user_acl.quarantine, 0) AS quarantine_acl, count(id) AS counter, rcpt, sender FROM quarantine
+LEFT OUTER JOIN user_acl ON user_acl.username = rcpt
+WHERE notified = 0 AND rcpt in (SELECT username FROM mailbox)
+# dont send notifications for blacklisted senders
+AND (SELECT prefid FROM filterconf WHERE option = "blacklist_from" AND (object = rcpt OR object = SUBSTRING(rcpt, LOCATE("@", rcpt) + 1)) AND sender REGEXP(REPLACE(value, '*', '.+'))) IS NULL GROUP BY rcpt
+""")
 
 for record in records:
   attrs = ''
@@ -110,7 +128,13 @@ for record in records:
     print('Could not determine last notification for %s, assuming never' % (record['rcpt']))
     last_notification = 0
   attrs_json = query_mysql('SELECT attributes FROM mailbox WHERE username = "%s"' % (record['rcpt']))
-  attrs = json.loads(str(attrs_json[0]['attributes'].decode('utf-8')))
+  attrs = attrs_json[0]['attributes']
+  if isinstance(attrs, str):
+    # if attr is str then just load it
+    attrs = json.loads(attrs)
+  else:
+    # if it's bytes then decode and load it
+    attrs = json.loads(attrs.decode('utf-8'))
   if attrs['quarantine_notification'] not in ('hourly', 'daily', 'weekly', 'never'):
     print('Abnormal quarantine_notification value')
     continue

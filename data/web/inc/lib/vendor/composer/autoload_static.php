@@ -6,6 +6,10 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit873464e4bd965a3168f133248b1b218b
 {
+    public static $files = array (
+        '04c6c5c2f7095ccf6c481d3e53e1776f' => __DIR__ . '/..' . '/mustangostang/spyc/Spyc.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'R' => 
         array (
@@ -14,6 +18,7 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         'P' => 
         array (
             'PhpMimeMailParser\\' => 18,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'M' => 
         array (
@@ -39,6 +44,10 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         array (
             0 => __DIR__ . '/..' . '/php-mime-mail-parser/php-mime-mail-parser/src',
         ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
         'MatthiasMullie\\PathConverter\\' => 
         array (
             0 => __DIR__ . '/..' . '/matthiasmullie/path-converter/src',
@@ -57,15 +66,17 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'O' => 
+        array (
+            'OAuth2' => 
+            array (
+                0 => __DIR__ . '/..' . '/bshaffer/oauth2-server-php/src',
+            ),
+        ),
+    );
+
     public static $classMap = array (
-        'EasyPeasyICS' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/EasyPeasyICS.php',
-        'PHPMailer' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
-        'PHPMailerOAuth' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmaileroauth.php',
-        'PHPMailerOAuthGoogle' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmaileroauthgoogle.php',
-        'POP3' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.pop3.php',
-        'SMTP' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.smtp.php',
-        'ntlm_sasl_client_class' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/ntlm_sasl_client.php',
-        'phpmailerException' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
         'u2flib_server\\Error' => __DIR__ . '/..' . '/yubico/u2flib-server/src/u2flib_server/U2F.php',
         'u2flib_server\\RegisterRequest' => __DIR__ . '/..' . '/yubico/u2flib-server/src/u2flib_server/U2F.php',
         'u2flib_server\\Registration' => __DIR__ . '/..' . '/yubico/u2flib-server/src/u2flib_server/U2F.php',
@@ -78,6 +89,7 @@ class ComposerStaticInit873464e4bd965a3168f133248b1b218b
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit873464e4bd965a3168f133248b1b218b::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit873464e4bd965a3168f133248b1b218b::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit873464e4bd965a3168f133248b1b218b::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit873464e4bd965a3168f133248b1b218b::$classMap;
 
         }, null, ClassLoader::class);

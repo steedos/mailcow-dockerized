@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ddeboer\Imap;
 
 use Ddeboer\Imap\Exception\AuthenticationFailedException;
+use Ddeboer\Imap\Exception\ResourceCheckFailureException;
 
 /**
  * An IMAP server.
@@ -64,12 +65,12 @@ final class Server implements ServerInterface
             throw new \RuntimeException('IMAP extension must be enabled');
         }
 
-        $this->hostname = $hostname;
-        $this->port = $port;
-        $this->flags = $flags ? '/' . \ltrim($flags, '/') : '';
+        $this->hostname   = $hostname;
+        $this->port       = $port;
+        $this->flags      = '' !== $flags ? '/' . \ltrim($flags, '/') : '';
         $this->parameters = $parameters;
-        $this->options = $options;
-        $this->retries = $retries;
+        $this->options    = $options;
+        $this->retries    = $retries;
     }
 
     /**
@@ -79,16 +80,16 @@ final class Server implements ServerInterface
      * @param string $password Password
      *
      * @throws AuthenticationFailedException
-     *
-     * @return ConnectionInterface
      */
     public function authenticate(string $username, string $password): ConnectionInterface
     {
         $errorMessage = null;
-        $errorNumber = 0;
-        \set_error_handler(function ($nr, $message) use (&$errorMessage, &$errorNumber) {
+        $errorNumber  = 0;
+        \set_error_handler(static function ($nr, $message) use (&$errorMessage, &$errorNumber): bool {
             $errorMessage = $message;
             $errorNumber = $nr;
+
+            return true;
         });
 
         $resource = \imap_open(
@@ -111,8 +112,17 @@ final class Server implements ServerInterface
         }
 
         $check = \imap_check($resource);
-        $mailbox = $check->Mailbox;
-        $connection = \substr($mailbox, 0, \strpos($mailbox, '}') + 1);
+
+        if (false === $check) {
+            throw new ResourceCheckFailureException('Resource check failure');
+        }
+
+        $mailbox       = $check->Mailbox;
+        $connection    = $mailbox;
+        $curlyPosition = \strpos($mailbox, '}');
+        if (false !== $curlyPosition) {
+            $connection = \substr($mailbox, 0, $curlyPosition + 1);
+        }
 
         // These are necessary to get rid of PHP throwing IMAP errors
         \imap_errors();
@@ -123,8 +133,6 @@ final class Server implements ServerInterface
 
     /**
      * Glues hostname, port and flags and returns result.
-     *
-     * @return string
      */
     private function getServerString(): string
     {

@@ -7,7 +7,43 @@ jQuery(function($){
   var entityMap={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"};
   function escapeHtml(n){return String(n).replace(/[&<>"'`=\/]/g,function(n){return entityMap[n]})}
   function humanFileSize(i){if(Math.abs(i)<1024)return i+" B";var B=["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"],e=-1;do{i/=1024,++e}while(Math.abs(i)>=1024&&e<B.length-1);return i.toFixed(1)+" "+B[e]}
-
+  // Set paging
+  $('[data-page-size]').on('click', function(e){
+    e.preventDefault();
+    var new_size = $(this).data('page-size');
+    var parent_ul = $(this).closest('ul');
+    var table_id = $(parent_ul).data('table-id');
+    FooTable.get('#' + table_id).pageSize(new_size);
+    //$(this).parent().addClass('active').siblings().removeClass('active')
+    heading = $(this).parents('.panel').find('.panel-heading')
+    var n_results = $(heading).children('.table-lines').text().split(' / ')[1];
+    $(heading).children('.table-lines').text(function(){
+      if (new_size > n_results) {
+        new_size = n_results;
+      }
+      return new_size + ' / ' + n_results;
+    })
+  });
+  $(".refresh_table").on('click', function(e) {
+    e.preventDefault();
+    var table_name = $(this).data('table');
+    $('#' + table_name).find("tr.footable-empty").remove();
+    draw_table = $(this).data('draw');
+    eval(draw_table + '()');
+  });
+  function table_quarantine_ready(ft, name) {
+    $('.refresh_table').prop("disabled", false);
+    heading = ft.$el.parents('.panel').find('.panel-heading')
+    var ft_paging = ft.use(FooTable.Paging)
+    $(heading).children('.table-lines').text(function(){
+      var total_rows = ft_paging.totalRows;
+      var size = ft_paging.size;
+      if (size > total_rows) {
+        size = total_rows;
+      }
+      return size + ' / ' + total_rows;
+    })
+  }
   function draw_quarantine_table() {
     ft_quarantinetable = FooTable.init('#quarantinetable', {
       "columns": [
@@ -15,12 +51,13 @@ jQuery(function($){
         {"name":"id","type":"ID","filterable": false,"sorted": true,"direction":"DESC","title":"ID","style":{"width":"50px"}},
         {"name":"qid","breakpoints":"all","type":"text","title":lang.qid,"style":{"width":"125px"}},
         {"name":"sender","title":lang.sender},
+        {"name":"subject","title":lang.subj, "type": "text"},
         {"name":"rcpt","title":lang.rcpt, "breakpoints":"xs sm md", "type": "text"},
         {"name":"virus","title":lang.danger, "type": "text"},
         {"name":"score","title": lang.spam_score, "type": "text"},
-        {"name":"subject","title":lang.subj, "type": "text"},
-        {"name":"created","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleString();},"title":lang.received,"style":{"width":"170px"}},
-        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"width":"220px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
+        {"name":"notified","title":lang.notified, "type": "text"},
+        {"name":"created","formatter":function unix_time_format(tm) { var date = new Date(tm ? tm * 1000 : 0); return date.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit"});},"title":lang.received,"style":{"width":"170px"}},
+        {"name":"action","filterable": false,"sortable": false,"style":{"text-align":"right"},"style":{"min-width":"200px"},"type":"html","title":lang.action,"breakpoints":"xs sm md"}
       ],
       "rows": $.ajax({
         dataType: 'json',
@@ -44,6 +81,11 @@ jQuery(function($){
             } else {
               item.virus = '<span class="dot-neutral"></span>';
             }
+            if(item.notified > 0) {
+              item.notified = '&#10004;';
+            } else {
+              item.notified = '&#10006;';
+            }
             if (acl_data.login_as === 1) {
             item.action = '<div class="btn-group">' +
               '<a href="#" data-item="' + encodeURI(item.id) + '" class="btn btn-xs btn-info show_qid_info"><span class="glyphicon glyphicon-modal-window"></span> ' + lang.show_item + '</a>' +
@@ -63,7 +105,18 @@ jQuery(function($){
       "paging": {"enabled": true,"limit": 5,"size": pagination_size},
       "sorting": {"enabled": true},
       "filtering": {"enabled": true,"position": "left","connectors": false,"placeholder": lang.filter_table},
-      "toggleSelector": "table tbody span.footable-toggle"
+      "toggleSelector": "table tbody span.footable-toggle",
+      "on": {
+        "destroy.ft.table": function(e, ft){
+          $('.refresh_table').attr('disabled', 'true');
+        },
+        "ready.ft.table": function(e, ft){
+          table_quarantine_ready(ft, 'quarantinetable');
+        },
+        "after.ft.filtering": function(e, ft){
+          table_quarantine_ready(ft, 'quarantinetable');
+        }
+      },
     });
   }
 
@@ -91,12 +144,37 @@ jQuery(function($){
         $('#qid_detail_subj').text(data.subject);
         $('#qid_detail_text').text(data.text_plain);
         $('#qid_detail_text_from_html').text(data.text_html);
+        $('#qid_detail_hfrom').text(data.header_from);
+        $('#qid_detail_efrom').text(data.env_from);
+        $('#qid_detail_score').text(data.score);
+        $('#qid_detail_symbols').html('');
+        if (typeof data.symbols !== 'undefined') {
+          data.symbols.sort(function (a, b) {
+            if (a.score === 0) return 1
+            if (b.score === 0) return -1
+            if (b.score < 0 && a.score < 0) {
+              return a.score - b.score
+            }
+            if (b.score > 0 && a.score > 0) {
+              return b.score - a.score
+            }
+            return b.score - a.score
+          })
+          $.each(data.symbols, function (index, value) {
+            var highlightClass = ''
+            if (value.score > 0) highlightClass = 'negative'
+            else if (value.score < 0) highlightClass = 'positive'
+            else highlightClass = 'neutral'
+            $('#qid_detail_symbols').append('<span data-toggle="tooltip" class="rspamd-symbol ' + highlightClass + '" title="' + (value.options ? value.options.join(', ') : '') + '">' + value.name + ' (<span class="score">' + value.score + '</span>)</span>');
+          });
+          $('[data-toggle="tooltip"]').tooltip()
+        }
 
         $('#qid_detail_recipients').html('');
         if (typeof data.recipients !== 'undefined') {
           $.each(data.recipients, function(index, value) {
             var elem = $('<span class="mail-address-item"></span>');
-            elem.text(value.address + (value.type != 'to' ? (' (' + value.type.toUpperCase() + ')') : ''));
+            elem.text(value.address + ' (' + value.type.toUpperCase() + ')');
             $('#qid_detail_recipients').append(elem);
           });
         }

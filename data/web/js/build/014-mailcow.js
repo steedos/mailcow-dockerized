@@ -2,7 +2,7 @@ $(document).ready(function() {
   // mailcow alert box generator
   window.mailcow_alert_box = function(message, type) {
     msg = $('<span/>').text(message).text();
-    if (type == 'danger') {
+    if (type == 'danger' || type == 'info') {
       auto_hide = 0;
       $('#' + localStorage.getItem("add_modal")).modal('show');
       localStorage.removeItem("add_modal");
@@ -12,8 +12,37 @@ $(document).ready(function() {
     $.notify({message: msg},{z_index: 20000, delay: auto_hide, type: type,placement: {from: "bottom",align: "right"},animate: {enter: 'animated fadeInUp',exit: 'animated fadeOutDown'}});
   }
 
+  $(".generate_password").click(function( event ) {
+    event.preventDefault();
+    $('[data-hibp]').trigger('input');
+    if (typeof($(this).closest("form").data('pwgen-length')) == "number") {
+      var random_passwd = GPW.pronounceable($(this).closest("form").data('pwgen-length'))
+    }
+    else {
+      var random_passwd = GPW.pronounceable(8)
+    }
+    $(this).closest("form").find('[data-pwgen-field]').attr('type', 'text');
+    $(this).closest("form").find('[data-pwgen-field]').val(random_passwd);
+  });
+  function str_rot13(str) {
+    return (str + '').replace(/[a-z]/gi, function(s){
+      return String.fromCharCode(s.charCodeAt(0) + (s.toLowerCase() < 'n' ? 13 : -13))
+    })
+  }
+  $(".rot-enc").html(function(){
+    return str_rot13($(this).html())
+  });
   // https://stackoverflow.com/questions/4399005/implementing-jquerys-shake-effect-with-animate
-  function shake(div,interval=100,distance=10,times=4) {
+  function shake(div,interval,distance,times) {
+      if(typeof interval === 'undefined') {
+        interval = 100;
+      }
+      if(typeof distance === 'undefined') {
+        distance = 10;
+      }
+      if(typeof times === 'undefined') {
+        times = 4;
+      }
     $(div).css('position','relative');
     for(var iter=0;iter<(times+1);iter++){
       $(div).animate({ left: ((iter%2==0 ? distance : distance*-1))}, interval);
@@ -116,6 +145,12 @@ $(document).ready(function() {
       $(this).removeAttr("data-action");
       $(this).click(function(event) {
         event.preventDefault();
+      });
+    }
+    if ($(this).is("select")) {
+      $(this).selectpicker('destroy');
+      $(this).replaceWith(function() { 
+        return '<label class="control-label"><b>' + this.innerText + '</b></label>'; 
       });
     }
     if ($(this).hasClass('btn-group')) {
