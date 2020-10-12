@@ -29,11 +29,16 @@ final class EmailAddress
      */
     private $address;
 
+    /**
+     * @param string      $mailbox
+     * @param null|string $hostname
+     * @param null|string $name
+     */
     public function __construct(string $mailbox, string $hostname = null, string $name = null)
     {
-        $this->mailbox  = $mailbox;
+        $this->mailbox = $mailbox;
         $this->hostname = $hostname;
-        $this->name     = $name;
+        $this->name = $name;
 
         if (null !== $hostname) {
             $this->address = $mailbox . '@' . $hostname;
@@ -50,6 +55,8 @@ final class EmailAddress
 
     /**
      * Returns address with person name.
+     *
+     * @return string
      */
     public function getFullAddress(): string
     {
@@ -61,6 +68,9 @@ final class EmailAddress
         return $address;
     }
 
+    /**
+     * @return string
+     */
     public function getMailbox(): string
     {
         return $this->mailbox;

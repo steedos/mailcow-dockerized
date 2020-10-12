@@ -32,12 +32,14 @@ abstract class AbstractDate implements ConditionInterface
      */
     public function __construct(DateTimeInterface $date, string $dateFormat = 'j-M-Y')
     {
-        $this->date       = $date;
+        $this->date = $date;
         $this->dateFormat = $dateFormat;
     }
 
     /**
      * Converts the condition to a string that can be sent to the IMAP server.
+     *
+     * @return string
      */
     final public function toString(): string
     {
@@ -46,6 +48,8 @@ abstract class AbstractDate implements ConditionInterface
 
     /**
      * Returns the keyword that the condition represents.
+     *
+     * @return string
      */
     abstract protected function getKeyword(): string;
 }

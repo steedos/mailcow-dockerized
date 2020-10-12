@@ -5,14 +5,16 @@ table.footable>tbody>tr.footable-empty>td {
 .pagination a {
   text-decoration: none !important;
 }
-.panel.panel-default {
+.panel panel-default {
   overflow: visible !important;
 }
 .table-responsive {
   overflow: inherit !important;
 }
-.table-responsive {
-  overflow-x: scroll !important;
+@media screen and (max-width: 767px) {
+  .table-responsive {
+    overflow-x: scroll !important;
+  }
 }
 .btn-group {
   width: max-content;
@@ -56,14 +58,4 @@ table tbody tr {
 }
 table tbody tr td input[type="checkbox"] {
   cursor: pointer;
-}
-.label-last-in {
-  line-height: 2.5;
-  color: #4a4a4a!important;
-  background-color: #ececec!important;
-}
-.label-last-out {
-  line-height: 2.5;
-  color: #ececec!important;
-  background-color: #a0a0a0!important;
 }

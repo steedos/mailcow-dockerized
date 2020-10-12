@@ -19,11 +19,11 @@ function admin($_action, $_data = null) {
       $password		= $_data['password'];
       $password2  = $_data['password2'];
       $active     = intval($_data['active']);
-      if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username) || $username == 'API') {
+      if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username)) {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => array('username_invalid', $username)
+          'msg' => 'username_invalid'
         );
         return false;
       }
@@ -99,7 +99,7 @@ function admin($_action, $_data = null) {
       foreach ($usernames as $username) {
         $is_now = admin('details', $username);
         if (!empty($is_now)) {
-          $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
+          $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
           $username_new = (!empty($_data['username_new'])) ? $_data['username_new'] : $is_now['username'];
         }
         else {
@@ -115,7 +115,7 @@ function admin($_action, $_data = null) {
         if ($active == 0) {
           $left_active = 0;
           foreach (admin('get') as $admin) {
-            $left_active = $left_active + admin('details', $admin)['active'];
+            $left_active = $left_active + admin('details', $admin)['active_int'];
           }
           if ($left_active == 1) {
             $_SESSION['return'][] = array(
@@ -248,10 +248,12 @@ function admin($_action, $_data = null) {
     case 'details':
       $admindata = array();
       $stmt = $pdo->prepare("SELECT
-        `tfa`.`active` AS `tfa_active`,
+        `tfa`.`active` AS `tfa_active_int`,
+        CASE `tfa`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `tfa_active`,
         `admin`.`username`,
         `admin`.`created`,
-        `admin`.`active` AS `active`
+        `admin`.`active` AS `active_int`,
+        CASE `admin`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
           FROM `admin`
           LEFT OUTER JOIN `tfa` ON `tfa`.`username`=`admin`.`username`
             WHERE `admin`.`username`= :admin AND `superadmin` = '1'");
@@ -259,14 +261,14 @@ function admin($_action, $_data = null) {
         ':admin' => $_data
       ));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      if (empty($row)) {
+      if (empty($row)) { 
         return false;
       }
       $admindata['username'] = $row['username'];
-      $admindata['tfa_active'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
-      $admindata['tfa_active_int'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
+      $admindata['tfa_active'] = $row['tfa_active'];
       $admindata['active'] = $row['active'];
-      $admindata['active_int'] = $row['active'];
+      $admindata['tfa_active_int'] = $row['tfa_active_int'];
+      $admindata['active_int'] = $row['active_int'];
       $admindata['created'] = $row['created'];
       return $admindata;
     break;

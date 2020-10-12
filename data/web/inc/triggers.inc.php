@@ -37,16 +37,6 @@ if (isset($_POST["login_user"]) && isset($_POST["pass_user"])) {
 		$_SESSION['mailcow_cc_username'] = $login_user;
 		$_SESSION['mailcow_cc_role'] = "user";
     $_SESSION['mailcow_cc_last_login'] = last_login($login_user);
-    $http_parameters = explode('&', $_SESSION['index_query_string']);
-    unset($_SESSION['index_query_string']);
-    if (in_array('mobileconfig', $http_parameters)) {
-      if (in_array('only_email', $http_parameters)) {
-        header("Location: /mobileconfig.php?email_only");
-        die();
-      }
-      header("Location: /mobileconfig.php");
-      die();
-    }
 		header("Location: /user");
 	}
 	elseif ($as != "pending") {
@@ -100,26 +90,17 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 	if (isset($_POST["reset_main_logo"])) {
     customize('delete', 'main_logo');
 	}
-  // Some actions will not be available via API
+  // API and license cannot be controlled by API
 	if (isset($_POST["license_validate_now"])) {
 		license('verify');
 	}
   if (isset($_POST["admin_api"])) {
-    if (isset($_POST["admin_api"]["ro"])) {
-      admin_api('ro', 'edit', $_POST);
-    }
-    elseif (isset($_POST["admin_api"]["rw"])) {
-      admin_api('rw', 'edit', $_POST);
-    }
+		admin_api('edit', $_POST);
 	}
-  if (isset($_POST["admin_api_regen_key"])) {
-    if (isset($_POST["admin_api_regen_key"]["ro"])) {
-      admin_api('ro', 'regen_key', $_POST);
-    }
-    elseif (isset($_POST["admin_api_regen_key"]["rw"])) {
-      admin_api('rw', 'regen_key', $_POST);
-    }
+	if (isset($_POST["admin_api_regen_key"])) {
+		admin_api('regen_key', $_POST);
 	}
+  // Not available via API
 	if (isset($_POST["rspamd_ui"])) {
 		rspamd_ui('edit', $_POST);
 	}

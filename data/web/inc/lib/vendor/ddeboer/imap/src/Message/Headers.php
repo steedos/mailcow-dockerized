@@ -11,6 +11,8 @@ final class Headers extends Parameters
 {
     /**
      * Constructor.
+     *
+     * @param \stdClass $headers
      */
     public function __construct(\stdClass $headers)
     {
@@ -27,7 +29,9 @@ final class Headers extends Parameters
     /**
      * Get header.
      *
-     * @return mixed
+     * @param string $key
+     *
+     * @return null|string
      */
     public function get(string $key)
     {
@@ -37,7 +41,8 @@ final class Headers extends Parameters
     /**
      * Parse header.
      *
-     * @param mixed $value
+     * @param string $key
+     * @param mixed  $value
      *
      * @return mixed
      */
@@ -53,10 +58,9 @@ final class Headers extends Parameters
             case 'reply_to':
             case 'sender':
             case 'return_path':
-                /** @var \stdClass $address */
                 foreach ($value as $address) {
                     if (isset($address->mailbox)) {
-                        $address->host     = $address->host ?? null;
+                        $address->host = $address->host ?? null;
                         $address->personal = isset($address->personal) ? $this->decode($address->personal) : null;
                     }
                 }

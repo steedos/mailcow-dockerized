@@ -32,23 +32,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['domains'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <? if($_SESSION['mailcow_cc_role'] == "admin"): ?><button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain'];?></button><? endif; ?>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_domain_table" data-table="domain_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="domain_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table id="domain_table" class="table table-striped"></table>
             </div>
@@ -76,33 +63,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['mailboxes'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_mailbox_table" data-table="mailbox_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="mailbox_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
-            <?php if (getenv('ALLOW_ADMIN_EMAIL_LOGIN') == "y" && getenv('SKIP_SOGO') != "y") { ?>
-            <div class="panel-body help-block">
-            <?=$lang['mailbox']['sogo_allow_admin_hint'];?>
-            </div>
-            <?php } ?>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table id="mailbox_table" class="table table-striped"></table>
             </div>
             <div class="mass-actions-mailbox">
-              <div class="btn-group hidden-md hidden-lg hidden-xl">
+              <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
@@ -124,70 +93,7 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"daily"}' href="#"><?=$lang['user']['daily'];?></a></li>
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"weekly"}' href="#"><?=$lang['user']['weekly'];?></a></li>
                   <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"never"}' href="#"><?=$lang['user']['never'];?></a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header"><?=$lang['mailbox']['allowed_protocols'];?></li>
-                  <li class="dropdown-header">IMAP</li>
-                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":0}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">POP3</li>
-                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":0}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                  <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">SMTP</li>
-                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                  <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":0}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                 </ul>
-                <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></a>
-              </div>
-              <div class="btn-group hidden-xs hidden-sm">
-                <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="mailbox" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
-                <div class="btn-group">
-                  <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['mailbox'];?> <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                    <li role="separator" class="divider"></li>
-                    <li><a data-action="delete_selected" data-id="mailbox" data-api-url='delete/mailbox' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-                  </ul>
-                </div>
-                <div class="btn-group">
-                  <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#">TLS <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li class="dropdown-header"><?=$lang['mailbox']['tls_enforce_in'];?></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_in":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_in":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                    <li role="separator" class="divider"></li>
-                    <li class="dropdown-header"><?=$lang['mailbox']['tls_enforce_out'];?></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_out":"1"}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/tls_policy' data-api-attr='{"tls_enforce_out":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                  </ul>
-                </div>
-                <div class="btn-group">
-                  <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['allowed_protocols'];?> <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li class="dropdown-header">IMAP</li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"imap_access":0}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                    <li role="separator" class="divider"></li>
-                    <li class="dropdown-header">POP3</li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"pop3_access":0}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                    <li role="separator" class="divider"></li>
-                    <li class="dropdown-header">SMTP</li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":1}' href="#"><?=$lang['mailbox']['activate'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/mailbox' data-api-attr='{"smtp_access":0}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
-                  </ul>
-                </div>
-                <div class="btn-group">
-                  <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quarantine_notification'];?> <span class="caret"></span></a>
-                  <ul class="dropdown-menu">
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"hourly"}' href="#"><?=$lang['user']['hourly'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"daily"}' href="#"><?=$lang['user']['daily'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"weekly"}' href="#"><?=$lang['user']['weekly'];?></a></li>
-                    <li><a data-action="edit_selected" data-id="mailbox" data-api-url='edit/quarantine_notification' data-api-attr='{"quarantine_notification":"never"}' href="#"><?=$lang['user']['never'];?></a></li>
-                  </ul>
-                </div>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addMailboxModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_mailbox'];?></a>
               </div>
             </div>
@@ -198,28 +104,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['resources'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_resource'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_resource_table" data-table="resource_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="resource_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
-            <div class="panel-body help-block">
-            <p><span class="label label-success"><?=$lang['mailbox']['booking_0_short'];?></span> - <?=$lang['mailbox']['booking_0'];?></p>
-            <p><span class="label label-warning"><?=$lang['mailbox']['booking_lt0_short'];?></span> - <?=$lang['mailbox']['booking_lt0'];?></p>
-            <p><span class="label label-danger"><?=$lang['mailbox']['booking_custom_short'];?></span> - <?=$lang['mailbox']['booking_custom'];?></p>
-            </div>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table id="resource_table" class="table table-striped"></table>
             </div>
@@ -236,6 +124,12 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addResourceModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_resource'];?></a>
               </div>
             </div>
+            <hr>
+            <div class="panel-body help-block">
+            <p><span class="label label-success"><?=$lang['mailbox']['booking_0_short'];?></span> - <?=$lang['mailbox']['booking_0'];?></p>
+            <p><span class="label label-warning"><?=$lang['mailbox']['booking_lt0_short'];?></span> - <?=$lang['mailbox']['booking_lt0'];?></p>
+            <p><span class="label label-danger"><?=$lang['mailbox']['booking_custom_short'];?></span> - <?=$lang['mailbox']['booking_custom'];?></p>
+            </div>
           </div>
         </div>
 
@@ -243,23 +137,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['domain_aliases'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addAliasDomainModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_domain_alias'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_aliasdomain_table" data-table="aliasdomain_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="aliasdomain_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table id="aliasdomain_table" class="table table-striped"></table>
             </div>
@@ -283,26 +164,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['aliases'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_alias_table" data-table="alias_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="alias_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
-            <div class="panel-body help-block">
-            <?=$lang['mailbox']['alias_domain_alias_hint'];?>
-            </div>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table id="alias_table" class="table table-striped"></table>
             </div>
@@ -315,11 +180,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                   <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"active":"0"}' href="#"><?=$lang['mailbox']['deactivate'];?></a></li>
                   <li role="separator" class="divider"></li>
                   <li><a data-action="delete_selected" data-id="alias" data-api-url='delete/alias' href="#"><?=$lang['mailbox']['remove'];?></a></li>
-                  <?php if (getenv('SKIP_SOGO') != "y") { ?>
-                  <li role="separator" class="divider"></li>
-                  <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"1"}' href="#"><?=$lang['mailbox']['sogo_visible_y'];?></a></li>
-                  <li><a data-action="edit_selected" data-id="alias" data-api-url='edit/alias' data-api-attr='{"sogo_visible":"0"}' href="#"><?=$lang['mailbox']['sogo_visible_n'];?></a></li>
-                  <?php } ?>
                 </ul>
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addAliasModal"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_alias'];?></a>
               </div>
@@ -331,23 +191,10 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['sync_jobs'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addSyncJobModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['user']['create_syncjob'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_sync_job_table" data-table="sync_job_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="sync_job_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table class="table table-striped" id="sync_job_table"></table>
             </div>
@@ -373,26 +220,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['filters'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_filter'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_filter_table" data-table="filter_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="filter_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
-            <div class="panel-body">
-              <p class="help-block"><?=$lang['mailbox']['sieve_info'];?></p><br>
-            </div>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
+            <p style="margin:10px" class="help-block"><?=$lang['mailbox']['sieve_info'];?></p>
             <div class="table-responsive">
               <table class="table table-striped" id="filter_table"></table>
             </div>
@@ -412,49 +244,6 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
                 <a class="btn btn-sm btn-success" href="#" data-toggle="modal" data-target="#addFilterModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_filter'];?></a>
               </div>
             </div>
-            <div class="panel-body <?=($_SESSION['mailcow_cc_role'] == "admin") ?: 'hidden';?>">
-              <?php
-              $global_filters = mailbox('get', 'global_filter_details');
-              ?>
-              <div class="row">
-                <div class="col-lg-6">
-                <h5>Global Prefilter</h5>
-                <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_prefilter">
-                  <div class="form-group">
-                    <div class="col-sm-12">
-                      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required><?=$global_filters['prefilter'];?></textarea>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="col-sm-10 add_filter_btns">
-                      <div class="btn-group">
-                        <button class="btn btn-sm btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
-                        <button class="btn btn-sm btn-success add_sieve_script" data-action="add_item" data-id="add_prefilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"prefilter"}' href="#" disabled><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-                </div>
-                <div class="col-lg-6">
-                <h5>Global Postfilter</h5>
-                <form class="form-horizontal" data-cached-form="false" role="form" data-id="add_postfilter">
-                  <div class="form-group">
-                    <div class="col-sm-12">
-                      <textarea autocorrect="off" spellcheck="false" autocapitalize="none" class="form-control textarea-code script_data" rows="10" name="script_data" required><?=$global_filters['postfilter'];?></textarea>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <div class="col-sm-10 add_filter_btns">
-                      <div class="btn-group">
-                        <button class="btn btn-sm btn-default validate_sieve" href="#"><?=$lang['add']['validate'];?></button>
-                        <button class="btn btn-sm btn-success add_sieve_script" data-action="add_item" data-id="add_postfilter" data-api-url='add/global-filter' data-api-attr='{"filter_type":"postfilter"}' href="#" disabled><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -462,24 +251,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['bcc_maps'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addBCCModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_bcc_entry'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_bcc_table" data-table="bcc_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="bcc_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['bcc_info'];?></p>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table class="table table-striped" id="bcc_table"></table>
             </div>
@@ -503,28 +279,15 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default <?=($_SESSION['mailcow_cc_role'] == "admin") ?: 'hidden';?>">
             <div class="panel-heading">
               <?=$lang['mailbox']['recipient_maps'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addRecipientMapModalAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_recipient_map_entry'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_recipient_map_table" data-table="recipient_map_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="recipient_map_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['recipient_map_info'];?></p>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table class="table table-striped" id="recipient_map_table"></table>
             </div>
-            <div class="mass-actions-mailbox">
+            <div class="mass-actions-mailbox" style="display: <?php echo $display; ?>">
               <div class="btn-group">
                 <a class="btn btn-sm btn-default" id="toggle_multi_select_all" data-id="recipient_map" href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> <?=$lang['mailbox']['toggle_all'];?></a>
                 <a class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['mailbox']['quick_actions'];?> <span class="caret"></span></a>
@@ -544,24 +307,11 @@ $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
           <div class="panel panel-default">
             <div class="panel-heading">
               <?=$lang['mailbox']['tls_policy_maps_long'];?> <span class="badge badge-info table-lines"></span>
-              <div class="btn-group pull-right hidden-xs">
-                <button class="btn btn-xs btn-success" href="#" data-toggle="modal" data-target="#addTLSPolicyMapAdmin"><span class="glyphicon glyphicon-plus"></span> <?=$lang['mailbox']['add_tls_policy_map'];?></button>
+              <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default refresh_table" data-draw="draw_tls_policy_table" data-table="tls_policy_table"><?=$lang['admin']['refresh'];?></button>
-                <button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown"><?=$lang['mailbox']['table_size'];?> 
-                  <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" data-table-id="tls_policy_table" role="menu">
-                  <li><a href="#" data-page-size="3"><?=sprintf($lang['mailbox']['table_size_show_n'], 3);?></a></li>
-                  <li><a href="#" data-page-size="10"><?=sprintf($lang['mailbox']['table_size_show_n'], 10);?></a></li>
-                  <li><a href="#" data-page-size="20"><?=sprintf($lang['mailbox']['table_size_show_n'], 20);?></a></li>
-                  <li><a href="#" data-page-size="50"><?=sprintf($lang['mailbox']['table_size_show_n'], 50);?></a></li>
-                  <li><a href="#" data-page-size="100"><?=sprintf($lang['mailbox']['table_size_show_n'], 100);?></a></li>
-                  <li><a href="#" data-page-size="200"><?=sprintf($lang['mailbox']['table_size_show_n'], 200);?></a></li>
-                </ul>
               </div>
             </div>
             <p style="margin:10px" class="help-block"><?=$lang['mailbox']['tls_policy_maps_info'];?></p>
-            <!-- <div class="mass-actions-mailbox" data-actions-header="true"></div> -->
             <div class="table-responsive">
               <table class="table table-striped" id="tls_policy_table"></table>
             </div>
@@ -607,7 +357,6 @@ echo "var ALLOW_ADMIN_EMAIL_LOGIN = " . $ALLOW_ADMIN_EMAIL_LOGIN . ";\n";
 </script>
 <?php
 $js_minifier->add('/web/js/site/mailbox.js');
-$js_minifier->add('/web/js/presets/sieveMailbox.js');
 $js_minifier->add('/web/js/site/pwgen.js');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/footer.inc.php';
 }

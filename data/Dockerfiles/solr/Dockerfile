@@ -4,7 +4,7 @@ USER root
 
 ENV GOSU_VERSION 1.11
 
-COPY solr.sh /
+COPY docker-entrypoint.sh /
 COPY solr-config-7.7.0.xml /
 COPY solr-schema-7.7.0.xml /
 
@@ -18,8 +18,8 @@ RUN dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
   bash \
   && apt-get autoclean \
   && rm -rf /var/lib/apt/lists/* \
-  && chmod +x /solr.sh \
+  && chmod +x /docker-entrypoint.sh \
   && sync \
-  && bash /solr.sh --bootstrap
+  && bash /docker-entrypoint.sh --bootstrap
 
-CMD ["/solr.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -5,7 +5,7 @@ biff = no
 append_dot_mydomain = no
 smtpd_tls_cert_file = /etc/ssl/mail/cert.pem
 smtpd_tls_key_file = /etc/ssl/mail/key.pem
-tls_server_sni_maps = hash:/opt/postfix/conf/sni.map
+smtpd_use_tls=yes
 smtpd_tls_received_header = yes
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
@@ -33,7 +33,6 @@ milter_protocol = 6
 minimal_backoff_time = 300s
 plaintext_reject_code = 550
 postscreen_access_list = permit_mynetworks,
-  cidr:/opt/postfix/conf/custom_postscreen_whitelist.cidr,
   cidr:/opt/postfix/conf/postscreen_access.cidr,
   tcp:127.0.0.1:10027
 postscreen_bare_newline_enable = no
@@ -49,7 +48,6 @@ postscreen_dnsbl_sites = wl.mailspike.net=127.0.0.[18;19;20]*-2
   list.dnswl.org=127.0.[0..255].3*-8
   ix.dnsbl.manitu.net*2
   bl.spamcop.net*2
-  bl.suomispam.net*2
   hostkarma.junkemailfilter.com=127.0.0.2*3
   hostkarma.junkemailfilter.com=127.0.0.4*2
   hostkarma.junkemailfilter.com=127.0.1.2*1
@@ -78,7 +76,6 @@ postscreen_greet_wait = 3s
 postscreen_non_smtp_command_enable = no
 postscreen_pipelining_enable = no
 proxy_read_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_transport_maps.cf,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_access_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   $sender_dependent_default_transport_maps,
   $smtp_tls_policy_maps,
@@ -116,11 +113,11 @@ smtpd_error_sleep_time = 10s
 smtpd_hard_error_limit = ${stress?1}${stress:5}
 smtpd_helo_required = yes
 smtpd_proxy_timeout = 600s
-smtpd_recipient_restrictions = check_sasl_access proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_access_maps.cf,
-  permit_sasl_authenticated,
+smtpd_recipient_restrictions = permit_sasl_authenticated,
   permit_mynetworks,
   check_recipient_access proxy:mysql:/opt/postfix/conf/sql/mysql_tls_enforce_in_policy.cf,
   reject_invalid_helo_hostname,
+  reject_unknown_reverse_client_hostname,
   reject_unauth_destination
 smtpd_sasl_auth_enable = yes
 smtpd_sasl_authenticated_header = yes
@@ -152,7 +149,7 @@ smtpd_tls_protocols = !SSLv2, !SSLv3
 
 smtpd_tls_security_level = may
 tls_preempt_cipherlist = yes
-tls_ssl_options = NO_COMPRESSION, NO_RENEGOTIATION
+tls_ssl_options = NO_COMPRESSION
 virtual_alias_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_alias_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_resource_maps.cf,
   proxy:mysql:/opt/postfix/conf/sql/mysql_virtual_spamalias_maps.cf,
@@ -172,29 +169,23 @@ smtpd_milters = inet:rspamd:9900
 non_smtpd_milters = inet:rspamd:9900
 milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
 mydestination = localhost.localdomain, localhost
-smtp_address_preference = any
+# Prefere IPv4, useful for v4-only envs
+smtp_address_preference = ipv4
 smtp_sender_dependent_authentication = yes
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_sasl_passwd_maps_sender_dependent.cf
-smtp_sasl_security_options =
+smtp_sasl_security_options = 
 smtp_sasl_mechanism_filter = plain, login
-smtp_tls_policy_maps = proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
+smtp_tls_policy_maps=proxy:mysql:/opt/postfix/conf/sql/mysql_tls_policy_override_maps.cf
 smtp_header_checks = pcre:/opt/postfix/conf/anonymize_headers.pcre
 mail_name = Postcow
 # local_transport map catches local destinations and prevents routing local dests when the next map would route "*"
-# Use custom_transport.pcre for custom transports
-transport_maps = pcre:/opt/postfix/conf/custom_transport.pcre,
-  pcre:/opt/postfix/conf/local_transport,
-  proxy:mysql:/opt/postfix/conf/sql/mysql_relay_ne.cf,
+transport_maps = pcre:/opt/postfix/conf/local_transport,
   proxy:mysql:/opt/postfix/conf/sql/mysql_transport_maps.cf
 smtp_sasl_auth_soft_bounce = no
 postscreen_discard_ehlo_keywords = silent-discard, dsn
 compatibility_level = 2
 smtputf8_enable = no
-smtpd_last_auth = check_policy_service inet:127.0.0.1:10028
-# Define protocols for SMTPS and submission service
-submission_smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
-smtps_smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, !TLSv1, !TLSv1.1
 
 # DO NOT EDIT ANYTHING BELOW #
 # User overrides #

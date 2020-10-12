@@ -1,10 +1,4 @@
 $(document).ready(function() {
-  mass_action = false;
-  function validateEmail(email) {
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-  }
-  function validateRegex(e){var t=e.split("/"),n=e,r="";t.length>1&&(n=t[1],r=t[2]);try{return new RegExp(n,r),!0}catch(e){return!1}}
   function is_active(elem) {
     if ($(elem).data('submitted') == '1') {
       return true;
@@ -37,11 +31,7 @@ $(document).ready(function() {
   };
   // Collect values of input fields with name "multi_select" and same data-id to js array multi_data[data-id]
   var multi_data = [];
-  $(document).on('change', 'input[name=multi_select]:checkbox', function(e) {
-    if(mass_action === true) {
-      multi_data = [];
-      mass_action = false;
-    }
+  $(document).on('change', 'input[name=multi_select]:checkbox', function() {
     if ($(this).is(':checked') && $(this).data('id')) {
       var id = $(this).data('id');
       if (typeof multi_data[id] == "undefined") {
@@ -51,9 +41,7 @@ $(document).ready(function() {
     }
     else {
       var id = $(this).data('id');
-      if (typeof multi_data[id] !== "undefined") {
-        multi_data[id].splice($.inArray($(this).val(), multi_data[id]),1);
-      }
+      multi_data[id].splice($.inArray($(this).val(), multi_data[id]),1);
     }
   });
 
@@ -76,7 +64,6 @@ $(document).ready(function() {
 
   // Select or deselect all checkboxes with same data-id
   $(document).on('click', '#toggle_multi_select_all', function(e) {
-    mass_action = true
     e.preventDefault();
     id = $(this).data("id");
     var all_checkboxes = $("input[data-id=" + id + "]:enabled");
@@ -112,14 +99,6 @@ $(document).ready(function() {
             $(this).removeClass('inputMissingAttr');
           }
         }
-        if ($(this).val() && $(this).attr("type") == 'email') {
-          if (!validateEmail($(this).val())) {
-            invalid = true;
-            $(this).addClass('inputMissingAttr');
-          } else {
-            $(this).removeClass('inputMissingAttr');
-          }
-        }
         if ($(this).attr("max")) {
           if (Number($(this).val()) > Number($(this).attr("max"))) {
             invalid = true;
@@ -133,18 +112,6 @@ $(document).ready(function() {
                 $(this).removeClass('inputMissingAttr');
               }
             }
-          }
-        }
-        if ($(this).val() && $(this).attr("regex")) {
-          var regex_content = $(this).val();
-          $(this).removeClass('inputMissingAttr');
-          if(!validateRegex(regex_content)) {
-            invalid = true;
-            $(this).addClass('inputMissingAttr');
-          }
-          if(!regex_content.startsWith('/') || !/\/[ims]?$/.test(regex_content)){
-            invalid = true;
-            $(this).addClass('inputMissingAttr');
           }
         }
       });
@@ -224,15 +191,6 @@ $(document).ready(function() {
             $(this).removeClass('inputMissingAttr');
           }
         }
-        if ($(this).attr("type") == 'email') {
-          var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-          if (!emailReg.test($(this).val())) {
-            invalid = true;
-            $(this).addClass('inputMissingAttr');
-          } else {
-            $(this).removeClass('inputMissingAttr');
-          }
-        }
         if ($(this).attr("max")) {
           if (Number($(this).val()) > Number($(this).attr("max"))) {
             invalid = true;
@@ -279,17 +237,14 @@ $(document).ready(function() {
           });
           if (unset === true) {
             unset = null;
-            // Keep form data for sync jobs
-            if (id != "add_syncjob") {
-              $('form').formcache('clear');
-              $('form').formcache('destroy');
-              var i = localStorage.length;
-              while(i--) {
-                var key = localStorage.key(i);
-                if(/formcache/.test(key)) {
-                  localStorage.removeItem(key);
-                }  
-              }
+            $('form').formcache('clear');
+            $('form').formcache('destroy');
+            var i = localStorage.length;
+            while(i--) {
+              var key = localStorage.key(i);
+              if(/formcache/.test(key)) {
+                localStorage.removeItem(key);
+              }  
             }
           }
           else {

@@ -1,8 +1,7 @@
-FROM debian:buster-slim
+FROM debian:stretch-slim
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DOVECOT=2.3.11.3
 ENV LC_ALL C
 
 # Add groups and users before installing Dovecot to not break compatibility
@@ -34,7 +33,6 @@ RUN groupadd -g 5000 vmail \
   libdbi-perl \
   libdigest-hmac-perl \
   libdist-checkconflicts-perl \
-  libencode-imaputf7-perl \
   libfile-copy-recursive-perl \
   libfile-tail-perl \
   libhtml-parser-perl \
@@ -71,17 +69,20 @@ RUN groupadd -g 5000 vmail \
   libunicode-string-perl \
   liburi-perl \
   libwww-perl \
-  lua-sql-mysql \
-  mariadb-client \
+  mysql-client \
   procps \
-  python3-pip \
+  python3 \
+  python3-html2text \
+  python3-jinja2 \
+  python3-mysql.connector \
+  python3-redis \
   redis-server \
   supervisor \
   syslog-ng \
   syslog-ng-core \
   syslog-ng-mod-redis \
   && apt-key adv --fetch-keys https://repo.dovecot.org/DOVECOT-REPO-GPG \
-  && echo "deb https://repo.dovecot.org/ce-${DOVECOT}/debian/buster buster main" > /etc/apt/sources.list.d/dovecot.list \
+  && echo 'deb https://repo.dovecot.org/ce-2.3-latest/debian/stretch stretch main' > /etc/apt/sources.list.d/dovecot.list \
   && apt-get update \
   && apt-get -y --no-install-recommends install \
   dovecot-lua \
@@ -94,16 +95,14 @@ RUN groupadd -g 5000 vmail \
   dovecot-pop3d \
   dovecot-imapd \
   dovecot-solr \
-  && pip3 install mysql-connector-python html2text jinja2 redis \
   && apt-get autoremove --purge -y \
   && apt-get autoclean \
   && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /tmp/* /var/tmp/* /etc/cron.daily/* /root/.cache/
+  && rm -rf /tmp/* /var/tmp/* /etc/cron.daily/*
 
 COPY trim_logs.sh /usr/local/bin/trim_logs.sh
 COPY clean_q_aged.sh /usr/local/bin/clean_q_aged.sh
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
 COPY imapsync /usr/local/bin/imapsync
 COPY postlogin.sh /usr/local/bin/postlogin.sh
 COPY imapsync_cron.pl /usr/local/bin/imapsync_cron.pl
@@ -118,7 +117,6 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY quarantine_notify.py /usr/local/bin/quarantine_notify.py
 COPY quota_notify.py /usr/local/bin/quota_notify.py
-COPY repl_health.sh /usr/local/bin/repl_health.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

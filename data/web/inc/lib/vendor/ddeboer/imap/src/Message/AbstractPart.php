@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ddeboer\Imap\Message;
 
-use Ddeboer\Imap\Exception\ImapFetchbodyException;
 use Ddeboer\Imap\Exception\UnexpectedEncodingException;
 use Ddeboer\Imap\ImapResourceInterface;
 use Ddeboer\Imap\Message;
@@ -72,11 +71,6 @@ abstract class AbstractPart implements PartInterface
     /**
      * @var null|string
      */
-    private $description;
-
-    /**
-     * @var null|string
-     */
     private $bytes;
 
     /**
@@ -103,25 +97,25 @@ abstract class AbstractPart implements PartInterface
      * @var array
      */
     private static $typesMap = [
-        \TYPETEXT        => self::TYPE_TEXT,
-        \TYPEMULTIPART   => self::TYPE_MULTIPART,
-        \TYPEMESSAGE     => self::TYPE_MESSAGE,
+        \TYPETEXT => self::TYPE_TEXT,
+        \TYPEMULTIPART => self::TYPE_MULTIPART,
+        \TYPEMESSAGE => self::TYPE_MESSAGE,
         \TYPEAPPLICATION => self::TYPE_APPLICATION,
-        \TYPEAUDIO       => self::TYPE_AUDIO,
-        \TYPEIMAGE       => self::TYPE_IMAGE,
-        \TYPEVIDEO       => self::TYPE_VIDEO,
-        \TYPEMODEL       => self::TYPE_MODEL,
-        \TYPEOTHER       => self::TYPE_OTHER,
+        \TYPEAUDIO => self::TYPE_AUDIO,
+        \TYPEIMAGE => self::TYPE_IMAGE,
+        \TYPEVIDEO => self::TYPE_VIDEO,
+        \TYPEMODEL => self::TYPE_MODEL,
+        \TYPEOTHER => self::TYPE_OTHER,
     ];
 
     /**
      * @var array
      */
     private static $encodingsMap = [
-        \ENC7BIT            => self::ENCODING_7BIT,
-        \ENC8BIT            => self::ENCODING_8BIT,
-        \ENCBINARY          => self::ENCODING_BINARY,
-        \ENCBASE64          => self::ENCODING_BASE64,
+        \ENC7BIT => self::ENCODING_7BIT,
+        \ENC8BIT => self::ENCODING_8BIT,
+        \ENCBINARY => self::ENCODING_BINARY,
+        \ENCBASE64 => self::ENCODING_BASE64,
         \ENCQUOTEDPRINTABLE => self::ENCODING_QUOTED_PRINTABLE,
     ];
 
@@ -129,9 +123,9 @@ abstract class AbstractPart implements PartInterface
      * @var array
      */
     private static $attachmentKeys = [
-        'name'      => true,
-        'filename'  => true,
-        'name*'     => true,
+        'name' => true,
+        'filename' => true,
+        'name*' => true,
         'filename*' => true,
     ];
 
@@ -149,14 +143,16 @@ abstract class AbstractPart implements PartInterface
         string $partNumber,
         \stdClass $structure
     ) {
-        $this->resource      = $resource;
+        $this->resource = $resource;
         $this->messageNumber = $messageNumber;
-        $this->partNumber    = $partNumber;
+        $this->partNumber = $partNumber;
         $this->setStructure($structure);
     }
 
     /**
      * Get message number (from headers).
+     *
+     * @return int
      */
     final public function getNumber(): int
     {
@@ -167,6 +163,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Ensure message exists.
+     *
+     * @param int $messageNumber
      */
     protected function assertMessageExists(int $messageNumber): void
     {
@@ -182,6 +180,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part structure.
+     *
+     * @return \stdClass
      */
     final public function getStructure(): \stdClass
     {
@@ -199,6 +199,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part parameters.
+     *
+     * @return Parameters
      */
     final public function getParameters(): Parameters
     {
@@ -209,6 +211,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part charset.
+     *
+     * @return null|string
      */
     final public function getCharset(): ?string
     {
@@ -219,6 +223,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part type.
+     *
+     * @return null|string
      */
     final public function getType(): ?string
     {
@@ -229,6 +235,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part subtype.
+     *
+     * @return null|string
      */
     final public function getSubtype(): ?string
     {
@@ -239,6 +247,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part encoding.
+     *
+     * @return null|string
      */
     final public function getEncoding(): ?string
     {
@@ -249,22 +259,14 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part disposition.
+     *
+     * @return null|string
      */
     final public function getDisposition(): ?string
     {
         $this->lazyParseStructure();
 
         return $this->disposition;
-    }
-
-    /**
-     * Part description.
-     */
-    final public function getDescription(): ?string
-    {
-        $this->lazyParseStructure();
-
-        return $this->description;
     }
 
     /**
@@ -281,6 +283,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Part lines.
+     *
+     * @return null|string
      */
     final public function getLines(): ?string
     {
@@ -291,6 +295,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Get raw part content.
+     *
+     * @return string
      */
     final public function getContent(): string
     {
@@ -303,6 +309,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Get content part number.
+     *
+     * @return string
      */
     protected function getContentPartNumber(): string
     {
@@ -311,6 +319,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Get part number.
+     *
+     * @return string
      */
     final public function getPartNumber(): string
     {
@@ -319,6 +329,8 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Get decoded part content.
+     *
+     * @return string
      */
     final public function getDecodedContent(): string
     {
@@ -329,7 +341,7 @@ abstract class AbstractPart implements PartInterface
 
             $content = $this->getContent();
             if (self::ENCODING_BASE64 === $this->getEncoding()) {
-                $content = \base64_decode($content, false);
+                $content = \base64_decode($content);
             } elseif (self::ENCODING_QUOTED_PRINTABLE === $this->getEncoding()) {
                 $content = \quoted_printable_decode($content);
             }
@@ -352,21 +364,19 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Get raw message content.
+     *
+     * @param string $partNumber
+     *
+     * @return string
      */
     final protected function doGetContent(string $partNumber): string
     {
-        $return = \imap_fetchbody(
+        return \imap_fetchbody(
             $this->resource->getStream(),
             $this->getNumber(),
             $partNumber,
             \FT_UID | \FT_PEEK
         );
-
-        if (false === $return) {
-            throw new ImapFetchbodyException('imap_fetchbody failed');
-        }
-
-        return $return;
     }
 
     /**
@@ -396,7 +406,7 @@ abstract class AbstractPart implements PartInterface
     /**
      * Get current child part.
      *
-     * @return \RecursiveIterator
+     * @return mixed
      */
     final public function getChildren()
     {
@@ -428,7 +438,7 @@ abstract class AbstractPart implements PartInterface
     /**
      * Move to next part.
      *
-     * @return void
+     * @return int
      */
     final public function next()
     {
@@ -438,7 +448,7 @@ abstract class AbstractPart implements PartInterface
     /**
      * Reset part key.
      *
-     * @return void
+     * @return int
      */
     final public function rewind()
     {
@@ -473,16 +483,12 @@ abstract class AbstractPart implements PartInterface
 
         // In our context, \ENCOTHER is as useful as an uknown encoding
         $this->encoding = self::$encodingsMap[$this->structure->encoding] ?? self::ENCODING_UNKNOWN;
-        $this->subtype  = $this->structure->subtype;
+        $this->subtype = $this->structure->subtype;
 
-        if (isset($this->structure->bytes)) {
-            $this->bytes = $this->structure->bytes;
-        }
-        if ($this->structure->ifdisposition) {
-            $this->disposition = $this->structure->disposition;
-        }
-        if ($this->structure->ifdescription) {
-            $this->description = $this->structure->description;
+        foreach (['disposition', 'bytes', 'description'] as $optional) {
+            if (isset($this->structure->{$optional})) {
+                $this->{$optional} = $this->structure->{$optional};
+            }
         }
 
         $this->parameters = new Parameters();
@@ -522,6 +528,10 @@ abstract class AbstractPart implements PartInterface
 
     /**
      * Check if the given part is an attachment.
+     *
+     * @param \stdClass $part
+     *
+     * @return bool
      */
     private static function isAttachment(\stdClass $part): bool
     {
@@ -562,10 +572,6 @@ abstract class AbstractPart implements PartInterface
             }
         }
          */
-
-        if (self::SUBTYPE_RFC822 === \strtoupper($part->subtype)) {
-            return true;
-        }
 
         return false;
     }

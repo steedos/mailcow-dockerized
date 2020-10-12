@@ -2,8 +2,6 @@
 
 namespace PhpMimeMailParser;
 
-use function var_dump;
-
 /**
  * Attachment of php-mime-mail-parser
  *
@@ -239,9 +237,7 @@ class Attachment
         // Determine filename
         switch ($filenameStrategy) {
             case Parser::ATTACHMENT_RANDOM_FILENAME:
-                $fileInfo = pathinfo($this->getFilename());
-                $extension  = empty($fileInfo['extension']) ? '' : '.'.$fileInfo['extension'];
-                $attachment_path = $attach_dir.uniqid().$extension;
+                $attachment_path = tempnam($attach_dir, '');
                 break;
             case Parser::ATTACHMENT_DUPLICATE_THROW:
             case Parser::ATTACHMENT_DUPLICATE_SUFFIX:

@@ -17,7 +17,6 @@ RUN groupadd -g 102 postfix \
 	ca-certificates \
 	curl \
 	dirmngr \
-  dnsutils \
 	gnupg \
 	libsasl2-modules \
   mariadb-client \
@@ -25,7 +24,7 @@ RUN groupadd -g 102 postfix \
 	postfix \
 	postfix-mysql \
 	postfix-pcre \
-	redis-tools \
+	python-gpg \
 	sasl2-bin \
 	sudo \
 	supervisor \
@@ -40,25 +39,21 @@ RUN groupadd -g 102 postfix \
 
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY syslog-ng.conf /etc/syslog-ng/syslog-ng.conf
-COPY syslog-ng-redis_slave.conf /etc/syslog-ng/syslog-ng-redis_slave.conf
+COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
 COPY postfix.sh /opt/postfix.sh
 COPY rspamd-pipe-ham /usr/local/bin/rspamd-pipe-ham
 COPY rspamd-pipe-spam /usr/local/bin/rspamd-pipe-spam
 COPY whitelist_forwardinghosts.sh /usr/local/bin/whitelist_forwardinghosts.sh
-COPY smtpd_last_login.sh /usr/local/bin/smtpd_last_login.sh
 COPY stop-supervisor.sh /usr/local/sbin/stop-supervisor.sh
-COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN chmod +x /opt/postfix.sh \
   /usr/local/bin/rspamd-pipe-ham \
   /usr/local/bin/rspamd-pipe-spam \
   /usr/local/bin/whitelist_forwardinghosts.sh \
-  /usr/local/bin/smtpd_last_login.sh \
   /usr/local/sbin/stop-supervisor.sh
-RUN rm -rf /tmp/* /var/tmp/*
 
 EXPOSE 588
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
-
 CMD exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+
+RUN rm -rf /tmp/* /var/tmp/*

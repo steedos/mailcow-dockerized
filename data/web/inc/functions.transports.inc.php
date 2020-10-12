@@ -64,7 +64,7 @@ function relayhost($_action, $_data = null) {
           $hostname = (!empty($_data['hostname'])) ? trim($_data['hostname']) : $is_now['hostname'];
           $username = (isset($_data['username'])) ? trim($_data['username']) : $is_now['username'];
           $password = (isset($_data['password'])) ? trim($_data['password']) : $is_now['password'];
-          $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
+          $active   = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
         }
         else {
           $_SESSION['return'][] = array(
@@ -154,8 +154,9 @@ function relayhost($_action, $_data = null) {
         `hostname`,
         `username`,
         `password`,
-        `active`,
-        CONCAT(LEFT(`password`, 3), '...') AS `password_short`
+        `active` AS `active_int`,
+        CONCAT(LEFT(`password`, 3), '...') AS `password_short`,
+        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
           FROM `relayhosts`
             WHERE `id` = :id");
       $stmt->execute(array(':id' => $_data));
@@ -189,9 +190,6 @@ function transport($_action, $_data = null) {
       $active = intval($_data['active']);
       $lookup_mx = intval($_data['lookup_mx']);
       $nexthop = trim($_data['nexthop']);
-      if (filter_var($nexthop, FILTER_VALIDATE_IP)) {
-        $nexthop = '[' . $nexthop . ']';
-      }
       preg_match('/\[(.+)\].*/', $nexthop, $next_hop_matches);
       $next_hop_clean = (isset($next_hop_matches[1])) ? $next_hop_matches[1] : $nexthop;
       $username = str_replace(':', '\:', trim($_data['username']));
@@ -245,7 +243,7 @@ function transport($_action, $_data = null) {
           }
         }
       }
-      $destinations = array_filter(array_values(array_unique($destinations)));
+      $destinations = array_values($destinations);
       if (empty($destinations)) { return false; }
       if (isset($next_hop_matches[1])) {
         if (in_array($next_hop_clean, $existing_nh)) {
@@ -313,8 +311,8 @@ function transport($_action, $_data = null) {
           $nexthop = (!empty($_data['nexthop'])) ? trim($_data['nexthop']) : $is_now['nexthop'];
           $username = (isset($_data['username'])) ? trim($_data['username']) : $is_now['username'];
           $password = (isset($_data['password'])) ? trim($_data['password']) : $is_now['password'];
-          $lookup_mx   = (isset($_data['lookup_mx']) && $_data['lookup_mx'] != '') ? intval($_data['lookup_mx']) : $is_now['lookup_mx'];
-          $active   = (isset($_data['active']) && $_data['active'] != '') ? intval($_data['active']) : $is_now['active'];
+          $lookup_mx   = (isset($_data['lookup_mx']) && $_data['lookup_mx'] != '') ? intval($_data['lookup_mx']) : $is_now['lookup_mx_int'];
+          $active   = (isset($_data['active']) && $_data['active'] != '') ? intval($_data['active']) : $is_now['active_int'];
         }
         else {
           $_SESSION['return'][] = array(
@@ -325,9 +323,6 @@ function transport($_action, $_data = null) {
           continue;
         }
         preg_match('/\[(.+)\].*/', $nexthop, $next_hop_matches);
-        if (filter_var($nexthop, FILTER_VALIDATE_IP)) {
-          $nexthop = '[' . $nexthop . ']';
-        }
         $next_hop_clean = (isset($next_hop_matches[1])) ? $next_hop_matches[1] : $nexthop;
         $transports = transport('get');
         if (!empty($transports)) {
@@ -465,9 +460,11 @@ function transport($_action, $_data = null) {
         `nexthop`,
         `username`,
         `password`,
-        `active`,
-        `lookup_mx`,
-        CONCAT(LEFT(`password`, 3), '...') AS `password_short`
+        `active` AS `active_int`,
+        `lookup_mx` AS `lookup_mx_int`,
+        CONCAT(LEFT(`password`, 3), '...') AS `password_short`,
+        CASE `active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`,
+        CASE `lookup_mx` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `lookup_mx`
           FROM `transports`
             WHERE `id` = :id");
       $stmt->execute(array(':id' => $_data));

@@ -1,13 +1,13 @@
-FROM debian:buster-slim
+FROM debian:stretch-slim
 
 LABEL maintainer "André Peters <andre.peters@servercow.de>"
 
-ARG CLAMAV=0.103.0
+# Installation
+ENV CLAMAV 0.101.4
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   zlib1g-dev \
-  libcurl4-openssl-dev \
   libncurses5-dev \
   libzip-dev \
   libpcre2-dev \
@@ -55,7 +55,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && adduser --system --no-create-home --home /var/lib/clamav --uid 700 --gid 700 --disabled-login clamav \
   && rm -rf /tmp/* /var/tmp/*
 
-COPY clamd.sh ./
+COPY bootstrap.sh ./
 COPY tini /sbin/tini
 
-CMD ["/sbin/tini", "-g", "--", "/clamd.sh"]
+CMD ["/sbin/tini", "-g", "--", "/bootstrap.sh"]

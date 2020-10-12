@@ -1,91 +1,6 @@
-# Changelog
-
-## [1.10.0](https://github.com/ddeboer/imap/tree/1.10.0) (2020-01-24)
-
-[Full Changelog](https://github.com/ddeboer/imap/compare/1.9.0...1.10.0)
-
-**Implemented enhancements:**
-
-- Handle comments \(CFWS\) in Date header + not-valid formats [\#439](https://github.com/ddeboer/imap/pull/439) ([pupaxxo](https://github.com/pupaxxo))
-- Support PHP 7.4, require PHP 7.2 [\#433](https://github.com/ddeboer/imap/pull/433) ([Slamdunk](https://github.com/Slamdunk))
-
-**Closed issues:**
-
-- Invalid Date header when trying to fetching date on not RFC compliant emails [\#438](https://github.com/ddeboer/imap/issues/438)
-
-**Merged pull requests:**
-
-- Clear the last used mailbox cache when closing a connection [\#447](https://github.com/ddeboer/imap/pull/447) ([dhzavann](https://github.com/dhzavann))
-- README: update PHP version to match composer.json [\#441](https://github.com/ddeboer/imap/pull/441) ([Slamdunk](https://github.com/Slamdunk))
-- Typo [\#440](https://github.com/ddeboer/imap/pull/440) ([OskarStark](https://github.com/OskarStark))
-
-## [1.9.0](https://github.com/ddeboer/imap/tree/1.9.0) (2019-11-25)
-
-[Full Changelog](https://github.com/ddeboer/imap/compare/1.8.0...1.9.0)
-
-**Implemented enhancements:**
-
-- Quota: let's also test the numbers [\#431](https://github.com/ddeboer/imap/pull/431) ([Slamdunk](https://github.com/Slamdunk))
-- Add getQuota method using imap\_get\_quotaroot to Connection class [\#430](https://github.com/ddeboer/imap/pull/430) ([arkadiusjonczek](https://github.com/arkadiusjonczek))
-
-**Closed issues:**
-
-- markAsSeen\(\)  not work [\#415](https://github.com/ddeboer/imap/issues/415)
-
-**Merged pull requests:**
-
-- CS Fix: strip redundant php docs [\#428](https://github.com/ddeboer/imap/pull/428) ([Slamdunk](https://github.com/Slamdunk))
-- Fix: Variable name [\#412](https://github.com/ddeboer/imap/pull/412) ([localheinz](https://github.com/localheinz))
-
-## [1.8.0](https://github.com/ddeboer/imap/tree/1.8.0) (2019-04-15)
-
-[Full Changelog](https://github.com/ddeboer/imap/compare/1.7.2...1.8.0)
-
-**Implemented enhancements:**
-
-- Add phpstan-strict-rules, expose PartiInterface::getDescription\(\) [\#409](https://github.com/ddeboer/imap/pull/409) ([Slamdunk](https://github.com/Slamdunk))
-
-## [1.7.2](https://github.com/ddeboer/imap/tree/1.7.2) (2019-04-12)
-
-[Full Changelog](https://github.com/ddeboer/imap/compare/1.7.1...1.7.2)
-
-**Fixed bugs:**
-
-- Handle message/rfc822 when content-disposition is missing [\#410](https://github.com/ddeboer/imap/pull/410) ([Daredzik](https://github.com/Daredzik))
-
-## [1.7.1](https://github.com/ddeboer/imap/tree/1.7.1) (2019-03-18)
-
-[Full Changelog](https://github.com/ddeboer/imap/compare/1.7.0...1.7.1)
-
-**Fixed bugs:**
-
-- Encoding problem with 1.7 [\#405](https://github.com/ddeboer/imap/issues/405)
-- imap\_search/imap\_sort: default params must not be passed if unspecified [\#406](https://github.com/ddeboer/imap/pull/406) ([Slamdunk](https://github.com/Slamdunk))
-
-## [1.7.0](https://github.com/ddeboer/imap/tree/1.7.0) (2019-03-04)
-
-[Full Changelog](https://github.com/ddeboer/imap/compare/1.6.0...1.7.0)
-
-**Implemented enhancements:**
-
-- Docker and Travis differs in handling new message eols [\#404](https://github.com/ddeboer/imap/pull/404) ([Slamdunk](https://github.com/Slamdunk))
-- Update PHP-CS-Fixer rules [\#403](https://github.com/ddeboer/imap/pull/403) ([Slamdunk](https://github.com/Slamdunk))
-- Add charset for imap\_search or imap\_sort [\#402](https://github.com/ddeboer/imap/pull/402) ([Slamdunk](https://github.com/Slamdunk))
-- PHPStan clean ups [\#400](https://github.com/ddeboer/imap/pull/400) ([Slamdunk](https://github.com/Slamdunk))
-- Adding an undelete\(\) message method [\#386](https://github.com/ddeboer/imap/pull/386) ([C-Duv](https://github.com/C-Duv))
-
-**Closed issues:**
-
-- Convert from GBK \(X-GBK\) to UTF-8 Issue [\#395](https://github.com/ddeboer/imap/issues/395)
-
-**Merged pull requests:**
-
-- Add new ResourceCheckFailureException to handle imap\_check\(\) false [\#399](https://github.com/ddeboer/imap/pull/399) ([pyatnitsev](https://github.com/pyatnitsev))
-- Remove GBK -\> X-GBK Alias and add X-GBK -\> GBK [\#396](https://github.com/ddeboer/imap/pull/396) ([pyatnitsev](https://github.com/pyatnitsev))
-- Add Feature Requests to README.md [\#394](https://github.com/ddeboer/imap/pull/394) ([Slamdunk](https://github.com/Slamdunk))
+# Change Log
 
 ## [1.6.0](https://github.com/ddeboer/imap/tree/1.6.0) (2018-12-04)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.5.5...1.6.0)
 
 **Implemented enhancements:**
@@ -110,7 +25,6 @@
 - Caching IMAP server connections [\#88](https://github.com/ddeboer/imap/issues/88)
 
 ## [1.5.5](https://github.com/ddeboer/imap/tree/1.5.5) (2018-08-21)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.5.4...1.5.5)
 
 **Fixed bugs:**
@@ -119,7 +33,6 @@
 - Handle plain/text attachments without Content-Type header [\#367](https://github.com/ddeboer/imap/pull/367) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.5.4](https://github.com/ddeboer/imap/tree/1.5.4) (2018-08-19)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.5.3...1.5.4)
 
 **Fixed bugs:**
@@ -128,7 +41,6 @@
 - Support RFC2231 attachment filenames [\#366](https://github.com/ddeboer/imap/pull/366) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.5.3](https://github.com/ddeboer/imap/tree/1.5.3) (2018-07-20)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.5.2...1.5.3)
 
 **Fixed bugs:**
@@ -136,7 +48,6 @@
 - Dates: handle UT timezone [\#361](https://github.com/ddeboer/imap/pull/361) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.5.2](https://github.com/ddeboer/imap/tree/1.5.2) (2018-07-10)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.5.1...1.5.2)
 
 **Fixed bugs:**
@@ -145,7 +56,6 @@
 - Handle invalid headers [\#359](https://github.com/ddeboer/imap/pull/359) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.5.1](https://github.com/ddeboer/imap/tree/1.5.1) (2018-05-04)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.5.0...1.5.1)
 
 **Fixed bugs:**
@@ -154,19 +64,13 @@
 - Fix handle of attachment messages with attachments [\#343](https://github.com/ddeboer/imap/pull/343) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.5.0](https://github.com/ddeboer/imap/tree/1.5.0) (2018-03-26)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.4.1...1.5.0)
 
 **Implemented enhancements:**
 
 - ImapResource: cache last opened mailbox [\#328](https://github.com/ddeboer/imap/pull/328) ([Slamdunk](https://github.com/Slamdunk))
 
-**Fixed bugs:**
-
-- AbstractPart::isAttachment\(\) handle unknown part type [\#302](https://github.com/ddeboer/imap/pull/302) ([Slamdunk](https://github.com/Slamdunk))
-
 ## [1.4.1](https://github.com/ddeboer/imap/tree/1.4.1) (2018-03-22)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.4.0...1.4.1)
 
 **Fixed bugs:**
@@ -179,7 +83,6 @@
 - Add entry in README about Mailbox::addMessage [\#325](https://github.com/ddeboer/imap/pull/325) ([soywod](https://github.com/soywod))
 
 ## [1.4.0](https://github.com/ddeboer/imap/tree/1.4.0) (2018-03-19)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.3.1...1.4.0)
 
 **Implemented enhancements:**
@@ -193,7 +96,6 @@
 - imap\_mime\_header\_decode may return false [\#322](https://github.com/ddeboer/imap/pull/322) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.3.1](https://github.com/ddeboer/imap/tree/1.3.1) (2018-03-09)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.3.0...1.3.1)
 
 **Implemented enhancements:**
@@ -205,7 +107,6 @@
 - getServerString\(\) with no port [\#311](https://github.com/ddeboer/imap/issues/311)
 
 ## [1.3.0](https://github.com/ddeboer/imap/tree/1.3.0) (2018-02-28)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.2.3...1.3.0)
 
 **Implemented enhancements:**
@@ -221,19 +122,18 @@
 - README.md: add `Unknown search criterion: OR` note [\#304](https://github.com/ddeboer/imap/pull/304) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.2.3](https://github.com/ddeboer/imap/tree/1.2.3) (2018-02-09)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.2.2...1.2.3)
 
 **Fixed bugs:**
 
 - $part-\>type can be 9 [\#301](https://github.com/ddeboer/imap/issues/301)
+- AbstractPart::isAttachment\(\) handle unknown part type [\#302](https://github.com/ddeboer/imap/pull/302) ([Slamdunk](https://github.com/Slamdunk))
 
 **Merged pull requests:**
 
 - README.md: code-coverage has higher priority than Scrutinizer [\#300](https://github.com/ddeboer/imap/pull/300) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.2.2](https://github.com/ddeboer/imap/tree/1.2.2) (2018-02-05)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.2.1...1.2.2)
 
 **Implemented enhancements:**
@@ -246,7 +146,6 @@
 - Don't handle multiplart as an attachment [\#298](https://github.com/ddeboer/imap/pull/298) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.2.1](https://github.com/ddeboer/imap/tree/1.2.1) (2018-01-29)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.2.0...1.2.1)
 
 **Implemented enhancements:**
@@ -261,7 +160,6 @@
 - MessageIterator: forbid raw calls [\#290](https://github.com/ddeboer/imap/pull/290) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.2.0](https://github.com/ddeboer/imap/tree/1.2.0) (2018-01-15)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.1.2...1.2.0)
 
 **Implemented enhancements:**
@@ -281,7 +179,6 @@
 - Appending mail with options [\#279](https://github.com/ddeboer/imap/issues/279)
 
 ## [1.1.2](https://github.com/ddeboer/imap/tree/1.1.2) (2017-12-12)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.1.1...1.1.2)
 
 **Fixed bugs:**
@@ -290,7 +187,6 @@
 - Support Microsoft charset values [\#271](https://github.com/ddeboer/imap/pull/271) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.1.1](https://github.com/ddeboer/imap/tree/1.1.1) (2017-11-10)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.1.0...1.1.1)
 
 **Implemented enhancements:**
@@ -306,11 +202,12 @@
 - README.md: add timeout note [\#263](https://github.com/ddeboer/imap/pull/263) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.1.0](https://github.com/ddeboer/imap/tree/1.1.0) (2017-11-06)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.8...1.1.0)
 
 **Implemented enhancements:**
 
+- Headers: no catchable exception [\#246](https://github.com/ddeboer/imap/issues/246)
+- imap\_thread [\#113](https://github.com/ddeboer/imap/issues/113)
 - Deprecate MessageInterface::maskAsSeen\(\) in favour of MessageInterface::markAsSeen\(\) [\#255](https://github.com/ddeboer/imap/pull/255) ([Slamdunk](https://github.com/Slamdunk))
 - Lazy load structured Headers [\#250](https://github.com/ddeboer/imap/pull/250) ([Slamdunk](https://github.com/Slamdunk))
 - Implement imap\_thread [\#249](https://github.com/ddeboer/imap/pull/249) ([Slamdunk](https://github.com/Slamdunk))
@@ -328,13 +225,7 @@
 - README.md: add Table of Contents with Travis checker [\#234](https://github.com/ddeboer/imap/pull/234) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.8](https://github.com/ddeboer/imap/tree/1.0.8) (2017-10-27)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.7...1.0.8)
-
-**Implemented enhancements:**
-
-- Headers: no catchable exception [\#246](https://github.com/ddeboer/imap/issues/246)
-- imap\_thread [\#113](https://github.com/ddeboer/imap/issues/113)
 
 **Fixed bugs:**
 
@@ -342,7 +233,6 @@
 - BasicMessageInterface::getId\(\) can be null [\#254](https://github.com/ddeboer/imap/pull/254) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.7](https://github.com/ddeboer/imap/tree/1.0.7) (2017-10-16)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.6...1.0.7)
 
 **Fixed bugs:**
@@ -351,7 +241,6 @@
 - IMAP resource must be checked at every call for mailbox context [\#247](https://github.com/ddeboer/imap/pull/247) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.6](https://github.com/ddeboer/imap/tree/1.0.6) (2017-10-12)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.5...1.0.6)
 
 **Fixed bugs:**
@@ -361,7 +250,6 @@
 - Message: From header can be absent [\#242](https://github.com/ddeboer/imap/pull/242) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.5](https://github.com/ddeboer/imap/tree/1.0.5) (2017-10-12)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.4...1.0.5)
 
 **Fixed bugs:**
@@ -369,7 +257,6 @@
 - Use set\_error\_handler with late exception [\#240](https://github.com/ddeboer/imap/pull/240) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.4](https://github.com/ddeboer/imap/tree/1.0.4) (2017-10-11)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.3...1.0.4)
 
 **Implemented enhancements:**
@@ -382,7 +269,6 @@
 - Relay also iconv during decoding [\#238](https://github.com/ddeboer/imap/pull/238) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.3](https://github.com/ddeboer/imap/tree/1.0.3) (2017-10-11)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.2...1.0.3)
 
 **Fixed bugs:**
@@ -390,7 +276,6 @@
 - Attachment::getFilename\(\) may be null on inline-att, widen return type [\#235](https://github.com/ddeboer/imap/pull/235) ([wujku](https://github.com/wujku))
 
 ## [1.0.2](https://github.com/ddeboer/imap/tree/1.0.2) (2017-10-06)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.1...1.0.2)
 
 **Fixed bugs:**
@@ -399,7 +284,6 @@
 - Do not charset-decode attachments [\#231](https://github.com/ddeboer/imap/pull/231) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.1](https://github.com/ddeboer/imap/tree/1.0.1) (2017-10-05)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/1.0.0...1.0.1)
 
 **Fixed bugs:**
@@ -408,7 +292,6 @@
 - If charset is not specified defaults to "us-ascii" [\#227](https://github.com/ddeboer/imap/pull/227) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [1.0.0](https://github.com/ddeboer/imap/tree/1.0.0) (2017-10-04)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.5.2...1.0.0)
 
 **Implemented enhancements:**
@@ -509,7 +392,6 @@
 - README.md updates [\#178](https://github.com/ddeboer/imap/pull/178) ([Slamdunk](https://github.com/Slamdunk))
 
 ## [0.5.2](https://github.com/ddeboer/imap/tree/0.5.2) (2015-12-03)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.5.1...0.5.2)
 
 **Closed issues:**
@@ -526,7 +408,6 @@
 - Make sure imap connection are reopened [\#79](https://github.com/ddeboer/imap/pull/79) ([joserobleda](https://github.com/joserobleda))
 
 ## [0.5.1](https://github.com/ddeboer/imap/tree/0.5.1) (2015-02-01)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.5.0...0.5.1)
 
 **Closed issues:**
@@ -542,7 +423,6 @@
 - Add support for attachments without content disposition [\#70](https://github.com/ddeboer/imap/pull/70) ([ddeboer](https://github.com/ddeboer))
 
 ## [0.5.0](https://github.com/ddeboer/imap/tree/0.5.0) (2015-01-24)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.4.0...0.5.0)
 
 **Closed issues:**
@@ -553,7 +433,6 @@
 - How get I getMessages but newest first ... [\#11](https://github.com/ddeboer/imap/issues/11)
 
 ## [0.4.0](https://github.com/ddeboer/imap/tree/0.4.0) (2015-01-04)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.3.1...0.4.0)
 
 **Closed issues:**
@@ -574,7 +453,6 @@
 - fixed typo [\#45](https://github.com/ddeboer/imap/pull/45) ([xelan](https://github.com/xelan))
 
 ## [0.3.1](https://github.com/ddeboer/imap/tree/0.3.1) (2014-08-11)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.3.0...0.3.1)
 
 **Merged pull requests:**
@@ -582,7 +460,6 @@
 - \imap\_header dosen't work with UID [\#44](https://github.com/ddeboer/imap/pull/44) ([ysramirez](https://github.com/ysramirez))
 
 ## [0.3.0](https://github.com/ddeboer/imap/tree/0.3.0) (2014-08-10)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.2...0.3.0)
 
 **Closed issues:**
@@ -602,13 +479,9 @@
 - Fixed typo [\#32](https://github.com/ddeboer/imap/pull/32) ([abhinavkumar940](https://github.com/abhinavkumar940))
 
 ## [0.2](https://github.com/ddeboer/imap/tree/0.2) (2013-11-24)
-
 [Full Changelog](https://github.com/ddeboer/imap/compare/0.1...0.2)
 
 ## [0.1](https://github.com/ddeboer/imap/tree/0.1) (2013-11-22)
-
-[Full Changelog](https://github.com/ddeboer/imap/compare/c02d49cdb9246901bb00d211a0f2aba208f6fab6...0.1)
-
 **Closed issues:**
 
 - Prevent setting SEEN flag [\#20](https://github.com/ddeboer/imap/issues/20)
@@ -634,4 +507,4 @@
 
 
 
-\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
+\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

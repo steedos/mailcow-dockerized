@@ -18,12 +18,7 @@ import dns.exception
 
 while True:
   try:
-    redis_slaveof_ip = os.getenv('REDIS_SLAVEOF_IP', '')
-    redis_slaveof_port = os.getenv('REDIS_SLAVEOF_PORT', '')
-    if "".__eq__(redis_slaveof_ip):
-      r = redis.StrictRedis(host=os.getenv('IPV4_NETWORK', '172.22.1') + '.249', decode_responses=True, port=6379, db=0)
-    else:
-      r = redis.StrictRedis(host=redis_slaveof_ip, decode_responses=True, port=redis_slaveof_port, db=0)
+    r = redis.StrictRedis(host=os.getenv('IPV4_NETWORK', '172.22.1') + '.249', decode_responses=True, port=6379, db=0)
     r.ping()
   except Exception as ex:
     print('%s - trying again in 3 seconds'  % (ex))
@@ -32,6 +27,15 @@ while True:
     break
 
 pubsub = r.pubsub()
+
+RULES = {}
+RULES[1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
+RULES[2] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
+RULES[3] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
+RULES[4] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
+RULES[5] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
+RULES[6] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
+#RULES[7] = '-login: Aborted login \(no auth .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
 
 WHITELIST = []
 BLACKLIST= []
@@ -48,16 +52,16 @@ def log(priority, message):
   tolog['message'] = message
   r.lpush('NETFILTER_LOG', json.dumps(tolog, ensure_ascii=False))
   print(message)
-
+  
 def logWarn(message):
   log('warn', message)
-
+  
 def logCrit(message):
   log('crit', message)
-
+  
 def logInfo(message):
   log('info', message)
-
+  
 def refreshF2boptions():
   global f2boptions
   global quit_now
@@ -71,8 +75,8 @@ def refreshF2boptions():
     f2boptions['ban_time'] = r.get('F2B_BAN_TIME') or 1800
     f2boptions['max_attempts'] = r.get('F2B_MAX_ATTEMPTS') or 10
     f2boptions['retry_window'] = r.get('F2B_RETRY_WINDOW') or 600
-    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 32
-    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or 128
+    f2boptions['netban_ipv4'] = r.get('F2B_NETBAN_IPV4') or 24
+    f2boptions['netban_ipv6'] = r.get('F2B_NETBAN_IPV6') or 64
     r.set('F2B_OPTIONS', json.dumps(f2boptions, ensure_ascii=False))
   else:
     try:
@@ -80,28 +84,6 @@ def refreshF2boptions():
       f2boptions = json.loads(r.get('F2B_OPTIONS'))
     except ValueError:
       print('Error loading F2B options: F2B_OPTIONS is not json')
-      quit_now = True
-
-def refreshF2bregex():
-  global f2bregex
-  global quit_now
-  if not r.get('F2B_REGEX'):
-    f2bregex = {}
-    f2bregex[1] = 'warning: .*\[([0-9a-f\.:]+)\]: SASL .+ authentication failed'
-    f2bregex[2] = '-login: Disconnected \(auth failed, .+\): user=.*, method=.+, rip=([0-9a-f\.:]+),'
-    f2bregex[3] = '-login: Aborted login \(tried to use disallowed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-    f2bregex[4] = 'SOGo.+ Login from \'([0-9a-f\.:]+)\' for user .+ might not have worked'
-    f2bregex[5] = 'mailcow UI: Invalid password for .+ by ([0-9a-f\.:]+)'
-    f2bregex[6] = '([0-9a-f\.:]+) \"GET \/SOGo\/.* HTTP.+\" 403 .+'
-    f2bregex[7] = 'Rspamd UI: Invalid password by ([0-9a-f\.:]+)'
-    f2bregex[8] = '-login: Aborted login \(auth failed .+\): user=.+, rip=([0-9a-f\.:]+), lip.+'
-    r.set('F2B_REGEX', json.dumps(f2bregex, ensure_ascii=False))
-  else:
-    try:
-      f2bregex = {}
-      f2bregex = json.loads(r.get('F2B_REGEX'))
-    except ValueError:
-      print('Error loading F2B options: F2B_REGEX is not json')
       quit_now = True
 
 if r.exists('F2B_LOG'):
@@ -125,8 +107,8 @@ def mailcowChainOrder():
           for position, item in enumerate(chain.rules):
             if item.target.name == 'MAILCOW':
               target_found = True
-              if position > 2:
-                logCrit('Error in %s chain order: MAILCOW on position %d, restarting container' % (chain.name, position))
+              if position != 0:
+                logCrit('Error in %s chain order, restarting container' % (chain.name))
                 quit_now = True
           if not target_found:
             logCrit('Error in %s chain: MAILCOW target not found, restarting container' % (chain.name))
@@ -149,13 +131,14 @@ def ban(address):
     return
 
   self_network = ipaddress.ip_network(address)
-
+  
   with lock:
     temp_whitelist = set(WHITELIST)
 
   if temp_whitelist:
     for wl_key in temp_whitelist:
       wl_net = ipaddress.ip_network(wl_key, False)
+          
       if wl_net.overlaps(self_network):
         logInfo('Address %s is whitelisted by rule %s' % (self_network, wl_net))
         return
@@ -231,6 +214,7 @@ def unban(net):
 
 def permBan(net, unban=False):
   global lock
+  
   if type(ipaddress.ip_network(net, strict=False)) is ipaddress.IPv4Network:
     with lock:
       chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), 'MAILCOW')
@@ -261,7 +245,7 @@ def permBan(net, unban=False):
         logCrit('Remove host/network %s from blacklist' % net)
         chain.delete_rule(rule)
         r.hdel('F2B_PERM_BANS', '%s' % net)
-
+    
 def quit(signum, frame):
   global quit_now
   quit_now = True
@@ -302,19 +286,15 @@ def watch():
 
   while not quit_now:
     for item in pubsub.listen():
-      refreshF2bregex()
-      for rule_id, rule_regex in f2bregex.items():
+      for rule_id, rule_regex in RULES.items():
         if item['data'] and item['type'] == 'message':
-          try:
-            result = re.search(rule_regex, item['data'])
-          except re.error:
-            result = False
+          result = re.search(rule_regex, item['data'])
           if result:
             addr = result.group(1)
             ip = ipaddress.ip_address(addr)
             if ip.is_private or ip.is_loopback:
               continue
-            logWarn('%s matched rule id %s (%s)' % (addr, rule_id, item['data']))
+            logWarn('%s matched rule id %d' % (addr, rule_id))
             ban(addr)
 
 def snat4(snat_target):
@@ -338,7 +318,7 @@ def snat4(snat_target):
         chain = iptc.Chain(table, 'POSTROUTING')
         table.autocommit = False
         if get_snat4_rule() not in chain.rules:
-          logCrit('Added POSTROUTING rule for source network %s to SNAT target %s' % (get_snat4_rule().src, snat_target))
+          logCrit('Added POSTROUTING rule for source network %s to SNAT target %s' % (get_snat4_rule().src, snat_target))  
           chain.insert_rule(get_snat4_rule())
           table.commit()
         else:
@@ -407,21 +387,23 @@ def isIpNetwork(address):
     return False
   return True
 
-
+          
 def genNetworkList(list):
   resolver = dns.resolver.Resolver()
   hostnames = []
   networks = []
+
   for key in list:
     if isIpNetwork(key):
       networks.append(key)
     else:
       hostnames.append(key)
+
   for hostname in hostnames:
     hostname_ips = []
     for rdtype in ['A', 'AAAA']:
       try:
-        answer = resolver.resolve(qname=hostname, rdtype=rdtype, lifetime=3)
+        answer = resolver.query(qname=hostname, rdtype=rdtype, lifetime=3)
       except dns.exception.Timeout:
         logInfo('Hostname %s timedout on resolve' % hostname)
         break
@@ -430,49 +412,66 @@ def genNetworkList(list):
       except dns.exception.DNSException as dnsexception:
         logInfo('%s' % dnsexception)
         continue
+
       for rdata in answer:
         hostname_ips.append(rdata.to_text())
+
     networks.extend(hostname_ips)
+      
   return set(networks)
 
 def whitelistUpdate():
   global lock
   global quit_now
   global WHITELIST
+  
   while not quit_now:
     start_time = time.time()
     list = r.hgetall('F2B_WHITELIST')
+    
     new_whitelist = []
+    
     if list:
       new_whitelist = genNetworkList(list)
+    
     with lock:
       if Counter(new_whitelist) != Counter(WHITELIST):
         WHITELIST = new_whitelist
         logInfo('Whitelist was changed, it has %s entries' % len(WHITELIST))
-    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
 
+    time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
+    
 def blacklistUpdate():
   global quit_now
   global BLACKLIST
+  
   while not quit_now:
     start_time = time.time()
     list = r.hgetall('F2B_BLACKLIST')
+    
     new_blacklist = []
+    
     if list:
       new_blacklist = genNetworkList(list)
+      
     if Counter(new_blacklist) != Counter(BLACKLIST): 
       addban = set(new_blacklist).difference(BLACKLIST)
       delban = set(BLACKLIST).difference(new_blacklist)
+        
       BLACKLIST = new_blacklist
       logInfo('Blacklist was changed, it has %s entries' % len(BLACKLIST))
+        
       if addban:
         for net in addban:
           permBan(net=net)
+            
       if delban:
         for net in delban:
           permBan(net=net, unban=True)
+      
+        
     time.sleep(60.0 - ((time.time() - start_time) % 60.0)) 
-
+      
 def initChain():
   # Is called before threads start, no locking
   print("Initializing mailcow netfilter chain")
@@ -500,6 +499,7 @@ def initChain():
     rule.target = target
     if rule not in chain.rules:
       chain.insert_rule(rule)
+ 
 
 if __name__ == '__main__':
 
@@ -512,7 +512,7 @@ if __name__ == '__main__':
   watch_thread.daemon = True
   watch_thread.start()
 
-  if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') != 'n':
+  if os.getenv('SNAT_TO_SOURCE') and os.getenv('SNAT_TO_SOURCE') is not 'n':
     try:
       snat_ip = os.getenv('SNAT_TO_SOURCE')
       snat_ipo = ipaddress.ip_address(snat_ip)
@@ -523,7 +523,7 @@ if __name__ == '__main__':
     except ValueError:
       print(os.getenv('SNAT_TO_SOURCE') + ' is not a valid IPv4 address')
 
-  if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') != 'n':
+  if os.getenv('SNAT6_TO_SOURCE') and os.getenv('SNAT6_TO_SOURCE') is not 'n':
     try:
       snat_ip = os.getenv('SNAT6_TO_SOURCE')
       snat_ipo = ipaddress.ip_address(snat_ip)
@@ -541,7 +541,7 @@ if __name__ == '__main__':
   mailcowchainwatch_thread = Thread(target=mailcowChainOrder)
   mailcowchainwatch_thread.daemon = True
   mailcowchainwatch_thread.start()
-
+  
   blacklistupdate_thread = Thread(target=blacklistUpdate)
   blacklistupdate_thread.daemon = True
   blacklistupdate_thread.start()

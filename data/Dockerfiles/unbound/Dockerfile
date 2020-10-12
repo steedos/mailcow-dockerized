@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM alpine:3.10
 
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
@@ -19,5 +19,3 @@ EXPOSE 53/udp 53/tcp
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-
-CMD ["/usr/sbin/unbound"]

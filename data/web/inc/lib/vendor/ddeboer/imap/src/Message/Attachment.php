@@ -13,6 +13,8 @@ final class Attachment extends AbstractPart implements AttachmentInterface
 {
     /**
      * Get attachment filename.
+     *
+     * @return null|string
      */
     public function getFilename(): ?string
     {
@@ -23,20 +25,17 @@ final class Attachment extends AbstractPart implements AttachmentInterface
     /**
      * Get attachment file size.
      *
-     * @return null|int Number of bytes
+     * @return int Number of bytes
      */
     public function getSize()
     {
-        $size = $this->getParameters()->get('size');
-        if (\is_numeric($size)) {
-            $size = (int) $size;
-        }
-
-        return $size;
+        return $this->getParameters()->get('size');
     }
 
     /**
      * Is this attachment also an Embedded Message?
+     *
+     * @return bool
      */
     public function isEmbeddedMessage(): bool
     {
@@ -47,6 +46,8 @@ final class Attachment extends AbstractPart implements AttachmentInterface
      * Return embedded message.
      *
      * @throws NotEmbeddedMessageException
+     *
+     * @return EmbeddedMessageInterface
      */
     public function getEmbeddedMessage(): EmbeddedMessageInterface
     {

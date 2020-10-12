@@ -41,7 +41,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         </form>
         <hr>
         <p><?=$lang['admin']['rspamd-com_settings'];?></p>
-        <ul id="rspamd_presets"></ul>
+        <a href="#" class="small" id="rspamd_preset_1"><?=sprintf($lang['admin']['rsettings_insert_preset'], $lang['admin']['rsettings_preset_1']);?></a><br />
+        <a href="#" class="small" id="rspamd_preset_2"><?=sprintf($lang['admin']['rsettings_insert_preset'], $lang['admin']['rsettings_preset_2']);?></a>
       </div>
     </div>
   </div>
@@ -55,7 +56,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['admin']['add_domain_admin'];?></h3>
       </div>
       <div class="modal-body">
-          <form class="form-horizontal" data-cached-form="true" data-id="add_domain_admin" role="form" method="post" autocomplete="off">
+          <form class="form-horizontal" data-cached-form="true" data-id="add_domain_admin" role="form" method="post">
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
@@ -76,15 +77,15 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="password"><?=$lang['admin']['password'];?> (<a href="#" class="generate_password"><?=$lang['admin']['generate'];?></a>)</label>
+              <label class="control-label col-sm-2" for="password"><?=$lang['admin']['password'];?>:</label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" data-pwgen-field="true" data-hibp="true" name="password" placeholder="" autocomplete="new-password" required>
+              <input type="password" class="form-control" data-hibp="true" name="password" placeholder="" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="password2"><?=$lang['admin']['password_repeat'];?>:</label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" data-pwgen-field="true" name="password2" placeholder="" autocomplete="new-password" required>
+              <input type="password" class="form-control" name="password2" placeholder="" required>
               </div>
             </div>
             <div class="form-group">
@@ -104,32 +105,6 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add domain admin modal -->
-<!-- add oauth2 client modal -->
-<div class="modal fade" id="addOAuth2ClientModal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h3 class="modal-title">OAuth2</h3>
-      </div>
-      <div class="modal-body">
-          <form class="form-horizontal" data-cached-form="true" data-id="add_oauth2_client" role="form" method="post">
-            <div class="form-group">
-              <label class="control-label col-sm-2" for="redirect_uri"><?=$lang['admin']['oauth2_redirect_uri'];?>:</label>
-              <div class="col-sm-10">
-              <input type="text" class="form-control" name="redirect_uri" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" data-action="add_item" data-id="add_oauth2_client" data-api-url='add/oauth2-client' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <?=$lang['admin']['add'];?></button>
-              </div>
-            </div>
-          </form>
-      </div>
-    </div>
-  </div>
-</div><!-- add domain admin modal -->
 <!-- add admin modal -->
 <div class="modal fade" id="addAdminModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -139,7 +114,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['admin']['add_admin'];?></h3>
       </div>
       <div class="modal-body">
-          <form class="form-horizontal" data-cached-form="true" data-id="add_admin" role="form" method="post" autocomplete="off">
+          <form class="form-horizontal" data-cached-form="true" data-id="add_admin" role="form" method="post">
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
@@ -148,15 +123,15 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               </div>
             </div>
             <div class="form-group">
-              <label class="control-label col-sm-2" for="password"><?=$lang['admin']['password'];?> (<a href="#" class="generate_password"><?=$lang['admin']['generate'];?></a>):</label>
+              <label class="control-label col-sm-2" for="password"><?=$lang['admin']['password'];?>:</label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" data-pwgen-field="true" data-hibp="true" name="password" placeholder="" autocomplete="new-password" required>
+              <input type="password" class="form-control" data-hibp="true" name="password" placeholder="" required>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="password2"><?=$lang['admin']['password_repeat'];?>:</label>
               <div class="col-sm-10">
-              <input type="password" class="form-control" data-pwgen-field="true" name="password2" placeholder="" autocomplete="new-password" required>
+              <input type="password" class="form-control" name="password2" placeholder="" required>
               </div>
             </div>
             <div class="form-group">
@@ -206,20 +181,6 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- test transport modal -->
-<!-- show queue item modal -->
-<div class="modal fade" id="showQueuedMsg" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h3 class="modal-title"><span class="glyphicon glyphicon-hourglass" style="font-size:18px"></span> ID <span id="queue_id"></span></h3>
-      </div>
-      <div class="modal-body">
-        <textarea class="form-control" id="queue_msg_content" name="content" rows="40"></textarea>
-      </div>
-    </div>
-  </div>
-</div><!-- show queue item modal -->
 <!-- priv key modal -->
 <div class="modal fade" id="showDKIMprivKey" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog">

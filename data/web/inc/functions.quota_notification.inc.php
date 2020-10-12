@@ -1,6 +1,7 @@
 <?php
 function quota_notification($_action, $_data = null) {
 	global $redis;
+	global $lang;
 	$_data_log = $_data;
   if ($_SESSION['mailcow_cc_role'] != "admin") {
     $_SESSION['return'][] = array(

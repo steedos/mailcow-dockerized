@@ -13,7 +13,7 @@ use Ddeboer\Imap\Exception\ReopenMailboxException;
 final class ImapResource implements ImapResourceInterface
 {
     /**
-     * @var mixed
+     * @var resource
      */
     private $resource;
 
@@ -35,7 +35,7 @@ final class ImapResource implements ImapResourceInterface
     public function __construct($resource, MailboxInterface $mailbox = null)
     {
         $this->resource = $resource;
-        $this->mailbox  = $mailbox;
+        $this->mailbox = $mailbox;
     }
 
     /**
@@ -69,13 +69,13 @@ final class ImapResource implements ImapResourceInterface
      */
     private function initMailbox(): void
     {
-        if (null === $this->mailbox || self::isMailboxOpen($this->mailbox, $this->resource)) {
+        if (null === $this->mailbox || $this->isMailboxOpen()) {
             return;
         }
 
         \imap_reopen($this->resource, $this->mailbox->getFullEncodedName());
 
-        if (self::isMailboxOpen($this->mailbox, $this->resource)) {
+        if ($this->isMailboxOpen()) {
             return;
         }
 
@@ -85,18 +85,18 @@ final class ImapResource implements ImapResourceInterface
     /**
      * Check whether the current mailbox is open.
      *
-     * @param mixed $resource
+     * @return bool
      */
-    private static function isMailboxOpen(MailboxInterface $mailbox, $resource): bool
+    private function isMailboxOpen(): bool
     {
-        $currentMailboxName = $mailbox->getFullEncodedName();
+        $currentMailboxName = $this->mailbox->getFullEncodedName();
         if ($currentMailboxName === self::$lastMailboxUsedCache) {
             return true;
         }
 
         self::$lastMailboxUsedCache = null;
-        $check                      = \imap_check($resource);
-        $return                     = false !== $check && $check->Mailbox === $currentMailboxName;
+        $check = \imap_check($this->resource);
+        $return = false !== $check && $check->Mailbox === $currentMailboxName;
 
         if (true === $return) {
             self::$lastMailboxUsedCache = $currentMailboxName;

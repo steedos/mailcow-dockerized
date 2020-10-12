@@ -1,4 +1,4 @@
-FROM alpine:3.11
+FROM alpine:3.10
 LABEL maintainer "Andre Peters <andre.peters@servercow.de>"
 
 WORKDIR /app
@@ -8,8 +8,7 @@ RUN apk add --virtual .build-deps gcc python3-dev musl-dev libffi-dev openssl-de
   && apk add --update --no-cache python3 openssl tzdata libmagic \
   && pip3 install --upgrade pip \
   && pip3 install --upgrade oletools asyncio python-magic \
-  && apk del .build-deps \
-  && sed -i 's/decompress_stream(bytearray(compressed_code))/bytes2str(decompress_stream(bytearray(compressed_code)))/g' /usr/lib/python3.8/site-packages/oletools/olevba.py
+  && apk del .build-deps
 
 ADD https://raw.githubusercontent.com/HeinleinSupport/olefy/master/olefy.py /app/
 
