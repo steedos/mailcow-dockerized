@@ -23,8 +23,6 @@ final class EmbeddedMessage extends AbstractMessage implements EmbeddedMessageIn
 
     /**
      * Get message headers.
-     *
-     * @return Headers
      */
     public function getHeaders(): Headers
     {
@@ -37,13 +35,11 @@ final class EmbeddedMessage extends AbstractMessage implements EmbeddedMessageIn
 
     /**
      * Get raw message headers.
-     *
-     * @return string
      */
     public function getRawHeaders(): string
     {
         if (null === $this->rawHeaders) {
-            $rawHeaders = \explode("\r\n\r\n", $this->getRawMessage(), 2);
+            $rawHeaders       = \explode("\r\n\r\n", $this->getRawMessage(), 2);
             $this->rawHeaders = \current($rawHeaders);
         }
 
@@ -66,8 +62,6 @@ final class EmbeddedMessage extends AbstractMessage implements EmbeddedMessageIn
 
     /**
      * Get content part number.
-     *
-     * @return string
      */
     protected function getContentPartNumber(): string
     {

@@ -22,16 +22,17 @@
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
         "ext-iconv": "*",
         "ext-imap": "*",
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.13",
-        "phpstan/phpstan": "^0.9.1",
-        "phpstan/phpstan-phpunit": "^0.9.3",
-        "phpunit/phpunit": "^7.4",
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan-phpunit": "^0.12",
+        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpunit/phpunit": "^8.5",
         "zendframework/zend-mail": "^2.10"
     },
     "autoload": {

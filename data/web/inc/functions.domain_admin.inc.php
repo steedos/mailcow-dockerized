@@ -31,11 +31,11 @@ function domain_admin($_action, $_data = null) {
         );
         return false;
       }
-      if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username)) {
+      if (!ctype_alnum(str_replace(array('_', '.', '-'), '', $username)) || empty ($username) || $username == 'API') {
         $_SESSION['return'][] = array(
           'type' => 'danger',
           'log' => array(__FUNCTION__, $_action, $_data_log),
-          'msg' => 'username_invalid'
+          'msg' => array('username_invalid', $username)
         );
         return false;
       }
@@ -44,12 +44,12 @@ function domain_admin($_action, $_data = null) {
         WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $num_results[] = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-      
+
       $stmt = $pdo->prepare("SELECT `username` FROM `admin`
         WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
       $num_results[] = count($stmt->fetchAll(PDO::FETCH_ASSOC));
-      
+
       $stmt = $pdo->prepare("SELECT `username` FROM `domain_admins`
         WHERE `username` = :username");
       $stmt->execute(array(':username' => $username));
@@ -83,15 +83,17 @@ function domain_admin($_action, $_data = null) {
           return false;
         }
         $password_hashed = hash_password($password);
+        $valid_domains = 0;
         foreach ($domains as $domain) {
-          if (!is_valid_domain_name($domain)) {
+          if (!is_valid_domain_name($domain) || mailbox('get', 'domain_details', $domain) === false) {
             $_SESSION['return'][] = array(
               'type' => 'danger',
               'log' => array(__FUNCTION__, $_action, $_data_log),
-              'msg' => 'domain_invalid'
+              'msg' => array('domain_invalid', htmlspecialchars($domain))
             );
-            return false;
+            continue;
           }
+          $valid_domains++;
           $stmt = $pdo->prepare("INSERT INTO `domain_admins` (`username`, `domain`, `created`, `active`)
               VALUES (:username, :domain, :created, :active)");
           $stmt->execute(array(
@@ -101,13 +103,15 @@ function domain_admin($_action, $_data = null) {
             ':active' => $active
           ));
         }
-        $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
-          VALUES (:username, :password_hashed, '0', :active)");
-        $stmt->execute(array(
-          ':username' => $username,
-          ':password_hashed' => $password_hashed,
-          ':active' => $active
-        ));
+        if ($valid_domains != 0) {
+          $stmt = $pdo->prepare("INSERT INTO `admin` (`username`, `password`, `superadmin`, `active`)
+            VALUES (:username, :password_hashed, '0', :active)");
+          $stmt->execute(array(
+            ':username' => $username,
+            ':password_hashed' => $password_hashed,
+            ':active' => $active
+          ));
+        }
       }
       else {
         $_SESSION['return'][] = array(
@@ -149,7 +153,7 @@ function domain_admin($_action, $_data = null) {
           $is_now = domain_admin('details', $username);
           $domains = (isset($_data['domains'])) ? (array)$_data['domains'] : null;
           if (!empty($is_now)) {
-            $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active_int'];
+            $active = (isset($_data['active'])) ? intval($_data['active']) : $is_now['active'];
             $domains = (!empty($domains)) ? $domains : $is_now['selected_domains'];
             $username_new = (!empty($_data['username_new'])) ? $_data['username_new'] : $is_now['username'];
           }
@@ -165,7 +169,7 @@ function domain_admin($_action, $_data = null) {
           $password2    = $_data['password2'];
           if (!empty($domains)) {
             foreach ($domains as $domain) {
-              if (!is_valid_domain_name($domain)) {
+              if (!is_valid_domain_name($domain) || mailbox('get', 'domain_details', $domain) === false) {
                 $_SESSION['return'][] = array(
                   'type' => 'danger',
                   'log' => array(__FUNCTION__, $_action, $_data_log),
@@ -373,7 +377,7 @@ function domain_admin($_action, $_data = null) {
       }
       $stmt = $pdo->query("SELECT DISTINCT
         `username`
-          FROM `domain_admins` 
+          FROM `domain_admins`
             WHERE `username` IN (
               SELECT `username` FROM `admin`
                 WHERE `superadmin`!='1'
@@ -396,12 +400,10 @@ function domain_admin($_action, $_data = null) {
         return false;
       }
       $stmt = $pdo->prepare("SELECT
-        `tfa`.`active` AS `tfa_active_int`,
-        CASE `tfa`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `tfa_active`,
+        `tfa`.`active` AS `tfa_active`,
         `domain_admins`.`username`,
         `domain_admins`.`created`,
-        `domain_admins`.`active` AS `active_int`,
-        CASE `domain_admins`.`active` WHEN 1 THEN '".$lang['mailbox']['yes']."' ELSE '".$lang['mailbox']['no']."' END AS `active`
+        `domain_admins`.`active` AS `active`
           FROM `domain_admins`
           LEFT OUTER JOIN `tfa` ON `tfa`.`username`=`domain_admins`.`username`
             WHERE `domain_admins`.`username`= :domain_admin");
@@ -409,14 +411,14 @@ function domain_admin($_action, $_data = null) {
         ':domain_admin' => $_data
       ));
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-      if (empty($row)) { 
+      if (empty($row)) {
         return false;
       }
       $domainadmindata['username'] = $row['username'];
-      $domainadmindata['tfa_active'] = $row['tfa_active'];
+      $domainadmindata['tfa_active'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
+      $domainadmindata['tfa_active_int'] = (is_null($row['tfa_active'])) ? 0 : $row['tfa_active'];
       $domainadmindata['active'] = $row['active'];
-      $domainadmindata['tfa_active_int'] = $row['tfa_active_int'];
-      $domainadmindata['active_int'] = $row['active_int'];
+      $domainadmindata['active_int'] = $row['active'];
       $domainadmindata['created'] = $row['created'];
       // GET SELECTED
       $stmt = $pdo->prepare("SELECT `domain` FROM `domain`

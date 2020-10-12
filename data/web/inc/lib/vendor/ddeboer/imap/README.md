@@ -6,7 +6,7 @@
 [![Latest Stable Version](https://poser.pugx.org/ddeboer/imap/v/stable.svg)](https://packagist.org/packages/ddeboer/imap)
 [![Total Downloads](https://poser.pugx.org/ddeboer/imap/downloads.png)](https://packagist.org/packages/ddeboer/imap)
 
-A PHP 7.1+ library to read and process e-mails over IMAP.
+A PHP 7.2+ library to read and process e-mails over IMAP.
 
 This library requires [IMAP](https://secure.php.net/manual/en/book.imap.php),
 [iconv](https://secure.php.net/manual/en/book.iconv.php) and
@@ -14,6 +14,7 @@ This library requires [IMAP](https://secure.php.net/manual/en/book.imap.php),
 
 ## Table of Contents
 
+1. [Feature Requests](#feature-requests)
 1. [Installation](#installation)
 1. [Usage](#usage)
     1. [Connect and Authenticate](#connect-and-authenticate)
@@ -28,6 +29,10 @@ This library requires [IMAP](https://secure.php.net/manual/en/book.imap.php),
 1. [Mock the library](#mock-the-library)
 1. [Running the Tests](#running-the-tests)
     1. [Running Tests using Docker](#running-tests-using-docker)
+
+## Feature Requests
+
+[![Feature Requests](https://feathub.com/ddeboer/imap?format=svg)](https://feathub.com/ddeboer/imap)
 
 ## Installation
 
@@ -154,10 +159,10 @@ function:
 
 ```php
 $today = new DateTimeImmutable();
-$lastMonth = $today->sub(new DateInterval('P30D'));
+$thirtyDaysAgo = $today->sub(new DateInterval('P30D'));
 
 $messages = $mailbox->getMessages(
-    new Ddeboer\Imap\Search\Date\Since($lastMonth),
+    new Ddeboer\Imap\Search\Date\Since($thirtyDaysAgo),
     \SORTDATE, // Sort criteria
     true // Descending order
 );

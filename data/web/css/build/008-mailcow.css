@@ -3,24 +3,24 @@
   font-style: normal;
   font-weight: 400;
   src: local('PT Sans'), local('PTSans-Regular'),
-    url('/fonts/pt-sans-v9-cyrillic_latin-regular.woff2') format('woff2'),
-    url('/fonts/pt-sans-v9-cyrillic_latin-regular.woff') format('woff');
+    url('/fonts/pt-sans-v11-latin-ext_cyrillic_latin-regular.woff2') format('woff2'),
+    url('/fonts/pt-sans-v11-latin-ext_cyrillic_latin-regular.woff') format('woff');
 }
 @font-face {
   font-family: 'PT Sans';
   font-style: normal;
   font-weight: 700;
   src: local('PT Sans Bold'), local('PTSans-Bold'),
-    url('/fonts/pt-sans-v9-cyrillic_latin-700.woff2') format('woff2'),
-    url('/fonts/pt-sans-v9-cyrillic_latin-700.woff') format('woff');
+    url('/fonts/pt-sans-v11-latin-ext_cyrillic_latin-700.woff2') format('woff2'),
+    url('/fonts/pt-sans-v11-latin-ext_cyrillic_latin-700.woff') format('woff');
 }
 @font-face {
   font-family: 'PT Sans';
   font-style: italic;
   font-weight: 400;
   src: local('PT Sans Italic'), local('PTSans-Italic'),
-    url('/fonts/pt-sans-v9-cyrillic_latin-italic.woff2') format('woff2'),
-    url('/fonts/pt-sans-v9-cyrillic_latin-italic.woff') format('woff');
+    url('/fonts/pt-sans-v11-latin-ext_cyrillic_latin-italic.woff2') format('woff2'),
+    url('/fonts/pt-sans-v11-latin-ext_cyrillic_latin-italic.woff') format('woff');
 }
 #maxmsgsize { min-width: 80px; }
 #slider1 .slider-selection {
@@ -81,7 +81,7 @@
     transform: rotate(359deg);
   }
 }
-pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
+pre{white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;}
 .footable-sortable {
   -webkit-user-select: none;  
   -moz-user-select: none;    
@@ -104,11 +104,11 @@ body {
   max-width: 550px;
   z-index: 2000;
 }
-.input-group-sm .btn { margin-top: 0px !important }
+.input-group-sm .btn { margin-top: 0 !important }
 legend {
   -webkit-user-select: none;
   -moz-user-select: none;
-  -ms-user-select: none
+  -ms-user-select: none;
   -o-user-select: none;
   user-select: none;
   font-size: 12pt;
@@ -172,4 +172,18 @@ nav .glyphicon {
 .progress-bar {
   font-size: 12px;
   line-height: 14px;
+}
+.footer {
+  margin-top: 27px;
+  margin-bottom: 20px;
+  color: #959595;
+}
+.slave-info {
+  padding: 15px 0px 15px 15px;
+  font-weight: bold;
+}
+.alert-hr {
+  margin:3px 0px;
+  border-bottom:1px solid #f5f5f5!important;
+  opacity: 0.3;
 }

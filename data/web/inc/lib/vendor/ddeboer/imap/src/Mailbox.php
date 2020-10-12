@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ddeboer\Imap;
 
 use DateTimeInterface;
+use Ddeboer\Imap\Exception\ImapNumMsgException;
+use Ddeboer\Imap\Exception\ImapStatusException;
 use Ddeboer\Imap\Exception\InvalidSearchCriteriaException;
 use Ddeboer\Imap\Exception\MessageCopyException;
 use Ddeboer\Imap\Exception\MessageMoveException;
@@ -41,14 +43,12 @@ final class Mailbox implements MailboxInterface
     public function __construct(ImapResourceInterface $resource, string $name, \stdClass $info)
     {
         $this->resource = new ImapResource($resource->getStream(), $this);
-        $this->name = $name;
-        $this->info = $info;
+        $this->name     = $name;
+        $this->info     = $info;
     }
 
     /**
      * Get mailbox decoded name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -57,18 +57,17 @@ final class Mailbox implements MailboxInterface
 
     /**
      * Get mailbox encoded path.
-     *
-     * @return string
      */
     public function getEncodedName(): string
     {
-        return \preg_replace('/^{.+}/', '', $this->info->name);
+        /** @var string $name */
+        $name = $this->info->name;
+
+        return (string) \preg_replace('/^{.+}/', '', $name);
     }
 
     /**
      * Get mailbox encoded full name.
-     *
-     * @return string
      */
     public function getFullEncodedName(): string
     {
@@ -77,8 +76,6 @@ final class Mailbox implements MailboxInterface
 
     /**
      * Get mailbox attributes.
-     *
-     * @return int
      */
     public function getAttributes(): int
     {
@@ -87,8 +84,6 @@ final class Mailbox implements MailboxInterface
 
     /**
      * Get mailbox delimiter.
-     *
-     * @return string
      */
     public function getDelimiter(): string
     {
@@ -102,19 +97,27 @@ final class Mailbox implements MailboxInterface
      */
     public function count()
     {
-        return \imap_num_msg($this->resource->getStream());
+        $return = \imap_num_msg($this->resource->getStream());
+
+        if (false === $return) {
+            throw new ImapNumMsgException('imap_num_msg failed');
+        }
+
+        return $return;
     }
 
     /**
      * Get Mailbox status.
-     *
-     * @param null|int $flags
-     *
-     * @return \stdClass
      */
     public function getStatus(int $flags = null): \stdClass
     {
-        return \imap_status($this->resource->getStream(), $this->getFullEncodedName(), $flags ?? \SA_ALL);
+        $return = \imap_status($this->resource->getStream(), $this->getFullEncodedName(), $flags ?? \SA_ALL);
+
+        if (false === $return) {
+            throw new ImapStatusException('imap_status failed');
+        }
+
+        return $return;
     }
 
     /**
@@ -122,8 +125,6 @@ final class Mailbox implements MailboxInterface
      *
      * @param string                       $flag    \Seen, \Answered, \Flagged, \Deleted, and \Draft
      * @param array|MessageIterator|string $numbers Message numbers
-     *
-     * @return bool
      */
     public function setFlag(string $flag, $numbers): bool
     {
@@ -135,8 +136,6 @@ final class Mailbox implements MailboxInterface
      *
      * @param string                       $flag    \Seen, \Answered, \Flagged, \Deleted, and \Draft
      * @param array|MessageIterator|string $numbers Message numbers
-     *
-     * @return bool
      */
     public function clearFlag(string $flag, $numbers): bool
     {
@@ -147,10 +146,8 @@ final class Mailbox implements MailboxInterface
      * Get message ids.
      *
      * @param ConditionInterface $search Search expression (optional)
-     *
-     * @return MessageIteratorInterface
      */
-    public function getMessages(ConditionInterface $search = null, int $sortCriteria = null, bool $descending = false): MessageIteratorInterface
+    public function getMessages(ConditionInterface $search = null, int $sortCriteria = null, bool $descending = false, string $charset = null): MessageIteratorInterface
     {
         if (null === $search) {
             $search = new All();
@@ -162,9 +159,27 @@ final class Mailbox implements MailboxInterface
         \imap_errors();
 
         if (null !== $sortCriteria) {
-            $messageNumbers = \imap_sort($this->resource->getStream(), $sortCriteria, $descending ? 1 : 0, \SE_UID, $query);
+            $params = [
+                $this->resource->getStream(),
+                $sortCriteria,
+                $descending ? 1 : 0,
+                \SE_UID,
+                $query,
+            ];
+            if (null !== $charset) {
+                $params[] = $charset;
+            }
+            $messageNumbers = \imap_sort(...$params);
         } else {
-            $messageNumbers = \imap_search($this->resource->getStream(), $query, \SE_UID);
+            $params = [
+                $this->resource->getStream(),
+                $query,
+                \SE_UID,
+            ];
+            if (null !== $charset) {
+                $params[] = $charset;
+            }
+            $messageNumbers = \imap_search(...$params);
         }
         if (false === $messageNumbers) {
             if (false !== \imap_last_error()) {
@@ -182,22 +197,20 @@ final class Mailbox implements MailboxInterface
      * Get message iterator for a sequence.
      *
      * @param string $sequence Message numbers
-     *
-     * @return MessageIteratorInterface
      */
     public function getMessageSequence(string $sequence): MessageIteratorInterface
     {
         \imap_errors();
 
-        $overview = \imap_fetch_overview($this->resource->getStream(), $sequence, FT_UID);
-        if (empty($overview)) {
+        $overview = \imap_fetch_overview($this->resource->getStream(), $sequence, \FT_UID);
+        if (\is_array($overview) && [] !== $overview) {
+            $messageNumbers = \array_column($overview, 'uid');
+        } else {
             if (false !== \imap_last_error()) {
                 throw new InvalidSearchCriteriaException(\sprintf('Invalid sequence [%s]', $sequence));
             }
 
             $messageNumbers = [];
-        } else {
-            $messageNumbers = \array_column($overview, 'uid');
         }
 
         return new MessageIterator($this->resource, $messageNumbers);
@@ -207,8 +220,6 @@ final class Mailbox implements MailboxInterface
      * Get a message by message number.
      *
      * @param int $number Message number
-     *
-     * @return MessageInterface
      */
     public function getMessage(int $number): MessageInterface
     {
@@ -217,8 +228,6 @@ final class Mailbox implements MailboxInterface
 
     /**
      * Get messages in this mailbox.
-     *
-     * @return MessageIteratorInterface
      */
     public function getIterator(): MessageIteratorInterface
     {
@@ -227,12 +236,6 @@ final class Mailbox implements MailboxInterface
 
     /**
      * Add a message to the mailbox.
-     *
-     * @param string                 $message
-     * @param null|string            $options
-     * @param null|DateTimeInterface $internalDate
-     *
-     * @return bool
      */
     public function addMessage(string $message, string $options = null, DateTimeInterface $internalDate = null): bool
     {
@@ -253,13 +256,14 @@ final class Mailbox implements MailboxInterface
 
     /**
      * Returns a tree of threaded message for the current Mailbox.
-     *
-     * @return array
      */
     public function getThread(): array
     {
-        \set_error_handler(function () {});
+        \set_error_handler(static function (): bool {
+            return true;
+        });
 
+        /** @var array|false $tree */
         $tree = \imap_thread($this->resource->getStream());
 
         \restore_error_handler();
@@ -301,8 +305,6 @@ final class Mailbox implements MailboxInterface
      * Prepare message ids for the use with bulk functions.
      *
      * @param array|MessageIterator|string $messageIds Message numbers
-     *
-     * @return string
      */
     private function prepareMessageIds($messageIds): string
     {
@@ -314,6 +316,6 @@ final class Mailbox implements MailboxInterface
             $messageIds = \implode(',', $messageIds);
         }
 
-        return (string) $messageIds;
+        return $messageIds;
     }
 }
