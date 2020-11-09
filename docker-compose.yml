@@ -521,6 +521,7 @@ services:
             - olefy
 
     ipv6nat-mailcow:
+      entrypoint: ["echo", "ipv6nat disabled in compose.override.yml"]
       depends_on:
         - unbound-mailcow
         - mysql-mailcow
@@ -543,7 +544,6 @@ services:
       image: robbertkl/ipv6nat
       security_opt:
         - label=disable
-      restart: always
       privileged: true
       network_mode: "host"
       volumes:
