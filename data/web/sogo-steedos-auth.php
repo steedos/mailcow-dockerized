@@ -23,14 +23,19 @@ $session_var_pass = 'sogo-sso-pass';
 $password = file_get_contents("/etc/sogo-sso/sogo-sso.pass");
 $_SESSION[$session_var_pass] = $password;
 
-$token = $_GET['token'];
+// $token = $_GET['token'];
 
 // pass token to steedos api to get user email
 // 配置creator服务地址
 $creator_url = $_ENV["CREATOR_URL"];
-$durl = "${creator_url}/accounts/user";
+$userId = $_COOKIE["X-User-Id"];
+$SpaceToken = $_COOKIE["X-Space-Token"];
 
-$headers = array("Authorization:".$token);
+$durl = "${creator_url}/api/v4/space_users?%24filter=(((((contains(tolower(user)%2C%27${userId}%27))))+and+((user_accepted+eq+true))))";
+
+
+$headers = array("Authorization: Bearer ".$SpaceToken);
+
 //初始化
 $curl = curl_init();
 //设置抓取的url
@@ -47,8 +52,13 @@ curl_close($curl);
 
 $data = json_decode($json,true);
 
-$username = $data['email'];
+// echo "data: ",$data;
+$value = reset($data['value']);
+
+$username = $value['email'];
 
 $_SESSION[$session_var_user_allowed][] = $username;
+
+// print_r($_SESSION);
 
 header("Location: /SOGo/so/${username}");
