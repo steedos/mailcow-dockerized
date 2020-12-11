@@ -103,6 +103,10 @@ $MAILCOW_APPS = array(
   array(
     'name' => 'Webmail',
     'link' => '/SOGo/',
+  ),
+  array(
+    'name' => 'RainLoop',
+    'link' => '/rl/',
   )
 );
 
