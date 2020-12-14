@@ -16747,28 +16747,28 @@ var staticIconClass = ___WEBPACK_IMPORTED_MODULE_6___default.a.memoize(function 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Text:
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Eml:
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].WordText:
-      resultClass = 'icon-attachment';
+      resultClass = 'icon-file-text';
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Html:
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Code:
-      resultClass = 'icon-attachment';
+      resultClass = 'icon-file-code';
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Image:
-      resultClass = 'icon-attachment';
+      resultClass = 'icon-file-image';
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Audio:
-      resultClass = 'icon-attachment';
+      resultClass = 'icon-file-music';
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Video:
-      resultClass = 'icon-attachment';
+      resultClass = 'icon-file-movie';
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Archive:
-      resultClass = 'icon-attachment';
+      resultClass = 'icon-file-zip';
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Certificate:
@@ -16777,7 +16777,7 @@ var staticIconClass = ___WEBPACK_IMPORTED_MODULE_6___default.a.memoize(function 
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Sheet:
-      resultClass = 'icon-attachment';
+      resultClass = 'icon-file-excel';
       break;
 
     case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Presentation:
