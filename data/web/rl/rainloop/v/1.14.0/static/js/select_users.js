@@ -42,18 +42,18 @@ function addMessageListener(){
 };
 
 //给收件人添加样式，让其看起来像A链接
-function addStyles(){
-    console.log("addStylesaddStyles");
-    var style = document.createElement("style");
-    var str = "#rainloop_mailEditor {color:#336699;text-decoration:underline; padding-bottom:3px;box-shadow:none;cursor:pointer}";
-    style.type="text/css"; 
-    if(style.styleSheet){
-        style.styleSheet.cssText = str;  
-    } else {  
-        style.innerHTML = str; 
-    }  
-    document.getElementsByTagName("head")[0].appendChild(style);  
-};
+// function addStyles(){
+//     console.log("addStylesaddStyles");
+//     var style = document.createElement("style");
+//     var str = "#rainloop_mailEditor {color:#336699;text-decoration:underline; padding-bottom:3px;box-shadow:none;cursor:pointer}";
+//     style.type="text/css"; 
+//     if(style.styleSheet){
+//         style.styleSheet.cssText = str;  
+//     } else {  
+//         style.innerHTML = str; 
+//     }  
+//     document.getElementsByTagName("head")[0].appendChild(style);  
+// };
 
 //给body添加click监听，如果点击的是to,cc,bcc的label，就会弹出组织选人界面
 function addBodyListener(){
