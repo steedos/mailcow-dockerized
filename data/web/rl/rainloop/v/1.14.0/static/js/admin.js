@@ -7133,7 +7133,7 @@ function formatCustomShortDate(m) {
         });
 
       case now.year() === m.year():
-        return m.format('D MMM.');
+        return m.format('MM-DD');
       // no default
     }
   }

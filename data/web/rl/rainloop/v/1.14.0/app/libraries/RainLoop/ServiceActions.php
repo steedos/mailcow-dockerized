@@ -1339,9 +1339,8 @@ class ServiceActions
 	{
 		$aResultLang = array();
 
-		$sMoment = 'window.moment && window.moment.locale && window.moment.locale(\'en\');';
-		$sMomentFileName = APP_VERSION_ROOT_PATH.'app/localization/moment/'.
-			$this->convertLanguageNameToMomentLanguageName($sLanguage).'.js';
+		$sMoment = 'window.moment && window.moment.locale && window.moment.locale(\'zh-cn\') && moment.locale(\'zh-cn\');';
+		$sMomentFileName = APP_VERSION_ROOT_PATH.'app/localization/moment/zh-cn.js';
 
 		if (\file_exists($sMomentFileName))
 		{
