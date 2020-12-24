@@ -16834,7 +16834,7 @@ var staticCombinedIconClass = function staticCombinedIconClass(data) {
           break;
 
         case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Archive:
-          result = 'icon-file-zip';
+          result = 'icon-attachment';
           break;
 
         case Common_Enums__WEBPACK_IMPORTED_MODULE_8__["FileType"].Certificate:
