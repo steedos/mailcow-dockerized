@@ -37,7 +37,7 @@
 								data-bind="textInput: email, hasFocus: emailFocus, disable: submitRequest"
 								data-i18n="[placeholder]LOGIN/LABEL_EMAIL" />
 							<span class="add-on">
-								<i class="icon-mail"></i>
+								<i style="margin-left: -82px; font-style: normal">@steedos.cn</i>
 							</span>
 						</div>
 					</div>
@@ -48,13 +48,6 @@
 								autocomplete="current-password" autocorrect="off" autocapitalize="off" spellcheck="false"
 								data-bind="textInput: password, hasFocus: passwordFocus, disable: submitRequest"
 								data-i18n="[placeholder]LOGIN/LABEL_PASSWORD" />
-							<span class="add-on" tabindex="-1" data-tooltip-join="left"
-								data-bind="command: submitCommand, tooltip: 'LOGIN/BUTTON_SIGN_IN'">
-								<i class="icon-key" data-bind="visible: '' === password()"></i>
-								<button type="submit" class="btn-submit-icon-wrp" data-bind="visible: '' !== password()">
-									<i class="icon-right-middle login-submit-icon"></i>
-								</button>
-							</span>
 						</div>
 					</div>
 					<div class="controls"
@@ -117,6 +110,12 @@
 								value: signMe
 							}
 						}"></div>
+						<span class="add-on" tabindex="-1" data-tooltip-join="left"
+							data-bind="command: submitCommand, tooltip: 'LOGIN/BUTTON_SIGN_IN'">
+							<button type="submit" class="btn" style="margin-top: 10px; width: 100%; height: 38px;">
+								<i class="login-submit-icon" style="font-size: 18px;height: 40px;font-style: normal;">登  录</i>
+							</button>
+						</span>
 
 					</div>
 					<div class="controls clearfix"
