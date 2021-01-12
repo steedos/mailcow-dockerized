@@ -26,7 +26,8 @@
 	background-image: url("@{base}@{value}") !important;
 }
 .thm-body-background-image(@value) when not (isstring(@value)) {
-	background-image: @value !important;
+	background-image: url("rainloop/v/1.14.0/static/background.jpg") !important;
+	background-size: cover !important;
 }
 .thm-rgba-background-color(@simple, @rgba) when (@rgba = false) {
 	background-color: @simple !important;
