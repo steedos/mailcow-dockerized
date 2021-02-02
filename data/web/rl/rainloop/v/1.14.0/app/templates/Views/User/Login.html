@@ -32,20 +32,19 @@
 						data-bind="css: {'error': emailError, 'animated': emailErrorAnimation}">
 						<div class="input-append">
 							<input type="email" class="i18n input-block-level inputEmail checkAutocomplete"
-								name="RainLoopEmail" id="RainLoopEmail" style="padding-right: 35px;" autocomplete="email"
-								autocorrect="off" autocapitalize="off" spellcheck="false"
+								name="RainLoopEmail" id="RainLoopEmail" style="padding-right: 35px;"
+								autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
 								data-bind="textInput: email, hasFocus: emailFocus, disable: submitRequest"
 								data-i18n="[placeholder]LOGIN/LABEL_EMAIL" />
-							<span class="add-on">
-								<i style="margin-left: -82px; font-style: normal">@steedos.cn</i>
-							</span>
+							<span class="add-on" style="margin-left: -129px;font-style: normal;font-size: 16px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;max-width: 125px;line-height: 29px;">@eportqhd.com</span>
 						</div>
 					</div>
 					<div class="controls" data-bind="css: {'error': passwordError, 'animated': passwordErrorAnimation}">
 						<div class="input-append">
 							<input type="password" class="i18n input-block-level inputPassword checkAutocomplete"
 								name="RainLoopPassword" id="RainLoopPassword" style="padding-right: 35px;"
-								autocomplete="current-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+								autocomplete="current-password" autocorrect="off" autocapitalize="off"
+								spellcheck="false"
 								data-bind="textInput: password, hasFocus: passwordFocus, disable: submitRequest"
 								data-i18n="[placeholder]LOGIN/LABEL_PASSWORD" />
 						</div>
@@ -74,7 +73,8 @@
 					</div>
 					{{INCLUDE/BottomControlGroup/PLACE}}
 					<div class="controls controls-submit-wrp" data-bind="css: {'display-none': hideSubmitButton}">
-						<button type="submit" class="btn btn-large btn-block buttonLogin" data-bind="command: submitCommand">
+						<button type="submit" class="btn btn-large btn-block buttonLogin"
+							data-bind="command: submitCommand">
 							<span class="i18n i18n-animation" data-i18n="LOGIN/BUTTON_SIGN_IN"></span>
 						</button>
 					</div>
@@ -113,7 +113,8 @@
 						<span class="add-on" tabindex="-1" data-tooltip-join="left"
 							data-bind="command: submitCommand, tooltip: 'LOGIN/BUTTON_SIGN_IN'">
 							<button type="submit" class="btn" style="margin-top: 10px; width: 100%; height: 38px;">
-								<i class="login-submit-icon" style="font-size: 18px;height: 40px;font-style: normal;">登  录</i>
+								<i class="login-submit-icon" style="font-size: 18px;height: 40px;font-style: normal;">登
+									录</i>
 							</button>
 						</span>
 
