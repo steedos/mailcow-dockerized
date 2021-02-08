@@ -71,7 +71,7 @@ services:
             - clamd
 
     rspamd-mailcow:
-      image: mailcow/rspamd:1.75
+      image: mailcow/rspamd:1.76
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
@@ -161,7 +161,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.93
+      image: mailcow/sogo:1.95
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -200,7 +200,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.139
+      image: mailcow/dovecot:1.140
       depends_on:
         - mysql-mailcow
       #dns:
@@ -262,7 +262,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.58
+      image: mailcow/postfix:1.59
       depends_on:
         - mysql-mailcow
       volumes:
@@ -344,8 +344,8 @@ services:
         - ./data/conf/rspamd/meta_exporter:/meta_exporter:ro,z
         - sogo-web-vol-1:/usr/lib/GNUstep/SOGo/:z
       ports:
-        - "${HTTPS_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
-        - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+        - "${HTTPS_BIND:-:}:${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+        - "${HTTP_BIND:-:}:${HTTP_PORT:-80}:${HTTP_PORT:-80}"
       restart: always
       networks:
         mailcow-network:
@@ -416,8 +416,10 @@ services:
       image: mailcow/watchdog:1.86
       # Debug
       #command: /watchdog.sh
-      #dns:
-        #- ${IPV4_NETWORK:-172.22.1}.254
+      # dns:
+      #   - ${IPV4_NETWORK:-172.22.1}.254
+      tmpfs:
+        - /tmp
       volumes:
         - rspamd-vol-1:/var/lib/rspamd:z
         - mysql-socket-vol-1:/var/run/mysqld/:z
