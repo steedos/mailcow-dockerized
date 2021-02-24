@@ -31,11 +31,11 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
       <div class="panel panel-default">
         <div class="panel-heading"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <?= $lang['login']['login']; ?></div>
         <div class="panel-body">
-          <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div>
+          <!-- <div class="text-center mailcow-logo"><img src="<?=($main_logo = customize('get', 'main_logo')) ? $main_logo : '/img/cow_mailcow.svg';?>" alt="mailcow"></div> -->
           <?php if (!empty($UI_TEXTS['ui_announcement_text']) && in_array($UI_TEXTS['ui_announcement_type'], array('info', 'warning', 'danger')) && $UI_TEXTS['ui_announcement_active'] == 1) { ?>
           <div class="alert alert-<?=$UI_TEXTS['ui_announcement_type'];?> rot-enc"><?=str_rot13($UI_TEXTS['ui_announcement_text']);?></div>
           <?php } ?>
-          <legend><?= isset($_SESSION['oauth2_request']) ? $lang['oauth2']['authorize_app'] : $UI_TEXTS['main_name'];?></legend>
+          <!-- <legend><?= isset($_SESSION['oauth2_request']) ? $lang['oauth2']['authorize_app'] : $UI_TEXTS['main_name'];?></legend> -->
             <?php
             if (strpos($_SESSION['index_query_string'], 'mobileconfig') !== false) {
             ?>
@@ -82,26 +82,25 @@ $_SESSION['index_query_string'] = $_SERVER['QUERY_STRING'];
             <p><div class="alert alert-info"><?= sprintf($lang['login']['delayed'], $_SESSION['ldelay']); ?></b></div></p>
             <?php } ?>
           <?php if(!isset($_SESSION['oauth2_request'])) { ?>
-            <legend><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?=$UI_TEXTS['apps_name'];?></legend>
+            <!-- <legend><span class="glyphicon glyphicon-link" aria-hidden="true"></span> <?=$UI_TEXTS['apps_name'];?></legend> -->
             <?php
-            if (!empty($MAILCOW_APPS)) {
-              foreach ($MAILCOW_APPS as $app) {
-                if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
+            // if (!empty($MAILCOW_APPS)) {
+            //   foreach ($MAILCOW_APPS as $app) {
+            //     if (getenv('SKIP_SOGO') == "y" && preg_match('/^\/SOGo/i', $app['link'])) { continue; }
               ?>
-                <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary"><?= htmlspecialchars($app['name']); ?></a>&nbsp;
+                <!-- <a href="<?= htmlspecialchars($app['link']); ?>" role="button" style="margin-bottom:3pt" title="<?= htmlspecialchars($app['description']); ?>" class="btn btn-primary"><?= htmlspecialchars($app['name']); ?></a>&nbsp; -->
               <?php
-              }
-            }
-            $app_links = customize('get', 'app_links');
-            if (!empty($app_links)) {
-              foreach ($app_links as $row) {
-                foreach ($row as $key => $val) {
+              // }
+            // }
+            // $app_links = customize('get', 'app_links');
+            // if (!empty($app_links)) {
+              // foreach ($app_links as $row) {
+                // foreach ($row as $key => $val) {
               ?>
-                <a href="<?= htmlspecialchars($val); ?>" role="button" style="margin-bottom:3pt" class="btn btn-primary"><?= htmlspecialchars($key); ?></a>&nbsp;
               <?php
-                }
-              }
-            }
+                // }
+              // }
+            // }
           }
           ?>
         </div>
