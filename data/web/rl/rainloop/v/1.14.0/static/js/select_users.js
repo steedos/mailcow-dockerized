@@ -2,7 +2,7 @@
 // CKEDITOR.lang.detect('zh-cn');
 
 //组织选人服务地址
-var selectUsersService = "http://192.168.0.62";
+var selectUsersService = "http://192.1.1.42/creator_mail";
 
 //打开组织选人
 function openSelectUsers(tag_element, field){
@@ -48,10 +48,11 @@ function addStyles(){
 //给body添加click监听，如果点击的是to,cc,bcc的label，就会弹出组织选人界面
 function addBodyListener(){
     document.body.addEventListener("click", function(event){
-        if(event.toElement.className === 'i18n'){
-            var mdChips = angular.element(event.toElement);
+        event.preventDefault();
+        if($(event.target).attr("class") === 'i18n'){
+            var mdChips = angular.element(event.target);
             var datai18n = mdChips.attr("data-i18n");
-            var inputId = angular.element(event.toElement.parentNode.parentNode.nextElementSibling).find("input").attr("class");
+            var inputId = angular.element(event.target.parentNode.parentNode.nextElementSibling).find("input").attr("class");
             var field = "";
             if(datai18n === 'COMPOSE/TITLE_TO'){
                 field = 'to';
