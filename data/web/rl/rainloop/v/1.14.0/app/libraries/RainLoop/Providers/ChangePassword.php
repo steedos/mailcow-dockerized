@@ -64,7 +64,7 @@ class ChangePassword extends \RainLoop\Providers\AbstractProvider
 			}
 
 			$sPasswordForCheck = \trim($sNewPassword);
-			if (6 > \strlen($sPasswordForCheck))
+			if (8 > \strlen($sPasswordForCheck))
 			{
 				throw new \RainLoop\Exceptions\ClientException(\RainLoop\Notifications::NewPasswordShort);
 			}

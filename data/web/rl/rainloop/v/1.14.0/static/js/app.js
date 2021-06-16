@@ -33858,7 +33858,7 @@ function (_AbstractViewNext) {
     _this.isInboxStarred = ko__WEBPACK_IMPORTED_MODULE_6__[/* default */ "a"].computed(function () {
       var _context;
 
-      return Stores_User_Folder__WEBPACK_IMPORTED_MODULE_15__[/* default */ "a"].currentFolder() && Stores_User_Folder__WEBPACK_IMPORTED_MODULE_15__[/* default */ "a"].currentFolder().isInbox() && -1 < _babel_runtime_corejs3_core_js_stable_instance_index_of__WEBPACK_IMPORTED_MODULE_2___default()(_context = Object(Common_Utils__WEBPACK_IMPORTED_MODULE_8__["trim"])(Stores_User_Message__WEBPACK_IMPORTED_MODULE_16__[/* default */ "a"].messageListSearch())).call(_context, 'is:flagged');
+      return Stores_User_Folder__WEBPACK_IMPORTED_MODULE_15__[/* default */ "a"].currentFolder() && Stores_User_Folder__WEBPACK_IMPORTED_MODULE_15__[/* default */ "a"].currentFolder().isInbox() && -1 < _babel_runtime_corejs3_core_js_stable_instance_index_of__WEBPACK_IMPORTED_MODULE_2___default()(_context = Object(Common_Utils__WEBPACK_IMPORTED_MODULE_8__["trim"])(Stores_User_Message__WEBPACK_IMPORTED_MODULE_16__[/* default */ "a"].messageListSearch())).call(_context, '已标记');
     });
     return _this;
   }
@@ -33900,7 +33900,7 @@ function (_AbstractViewNext) {
           }
 
           if (starred) {
-            Object(Knoin_Knoin__WEBPACK_IMPORTED_MODULE_19__["setHash"])(Object(Common_Links__WEBPACK_IMPORTED_MODULE_11__[/* mailBox */ "o"])(folder.fullNameHash, 1, 'is:flagged'));
+            Object(Knoin_Knoin__WEBPACK_IMPORTED_MODULE_19__["setHash"])(Object(Common_Links__WEBPACK_IMPORTED_MODULE_11__[/* mailBox */ "o"])(folder.fullNameHash, 1, '已标记'));
           } else {
             Object(Knoin_Knoin__WEBPACK_IMPORTED_MODULE_19__["setHash"])(Object(Common_Links__WEBPACK_IMPORTED_MODULE_11__[/* mailBox */ "o"])(folder.fullNameHash));
           }
@@ -34050,6 +34050,10 @@ function (_AbstractViewNext) {
 
   _proto.composeClick = function composeClick() {
     console.log("composeClick1");
+    if($().jqm){
+      addJqm();
+    }
+    
     if (Storage_Settings__WEBPACK_IMPORTED_MODULE_17__["capa"](Common_Enums__WEBPACK_IMPORTED_MODULE_9__["Capa"].Composer)) {
       Object(Knoin_Knoin__WEBPACK_IMPORTED_MODULE_19__["showScreenPopup"])(__webpack_require__(/*! View/Popup/Compose */ 122));
     }
@@ -34609,6 +34613,9 @@ function (_AbstractViewNext) {
 
   _proto.composeClick = function composeClick() {
     console.log("composeClick2");
+    if($().jqm){
+      addJqm();
+    }
     if (Storage_Settings__WEBPACK_IMPORTED_MODULE_30__["capa"](Common_Enums__WEBPACK_IMPORTED_MODULE_16__["Capa"].Composer)) {
       Object(Knoin_Knoin__WEBPACK_IMPORTED_MODULE_33__["showScreenPopup"])(__webpack_require__(/*! View/Popup/Compose */ 122));
     }
@@ -36144,6 +36151,9 @@ function (_AbstractViewNext) {
 
   _proto.composeClick = function composeClick() {
     console.log("composeClick3");
+    if($().jqm){
+      addJqm();
+    }
     if (Storage_Settings__WEBPACK_IMPORTED_MODULE_28__["capa"](Common_Enums__WEBPACK_IMPORTED_MODULE_13__["Capa"].Composer)) {
       Object(Knoin_Knoin__WEBPACK_IMPORTED_MODULE_32__["showScreenPopup"])(__webpack_require__(/*! View/Popup/Compose */ 122));
     }

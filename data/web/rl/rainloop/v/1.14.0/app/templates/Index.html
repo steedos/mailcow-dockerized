@@ -5,8 +5,8 @@
 			<meta http-equiv="refresh" content="0; URL=./?/NoScript" />
 		</noscript>
 		<!--[if lte IE 8]>
-			<meta http-equiv="refresh" content="0; URL=./?/BadBrowser" />
-		<![endif]-->
+				<meta http-equiv="refresh" content="0; URL=./?/BadBrowser" />
+			<![endif]-->
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 		<meta name="viewport" content="{{BaseViewport}}">
@@ -16,6 +16,8 @@
 		<meta name="AppBootData" content='{{RainloopBootData}}' id="app-boot-data" />
 		<script type="text/javascript" data-cfasync="false" src="{{BaseAppPolyfillsScriptLink}}"></script>
 		<script type="text/javascript" data-cfasync="false" src="{{BaseAppAngularScriptLink}}"></script>
+		<script type="text/javascript" data-cfasync="false" src="{{BaseAppLibScriptLink}}"></script>
+		<!-- <script type="text/javascript" data-cfasync="false" src="{{BaseAppJqModalScriptLink}}"></script> -->
 		{{BaseContentSecurityPolicy}}
 		<title></title>
 		{{BaseAppHeadScriptLink}}
@@ -23,7 +25,9 @@
 		{{BaseAppFaviconTouchLinkTag}}
 		<link type="text/css" rel="stylesheet" href="{{BaseAppMainCssLink}}" />
 		<link type="text/css" rel="stylesheet" href="{{BaseAppThemeCssLink}}" id="app-theme-link" />
+		<link type="text/css" rel="stylesheet" href="{{BaseAppJqModalCssLink}}" />
 		<link rel="manifest" href="{{BaseAppManifestLink}}" />
+		<!-- <script type="text/javascript" data-cfasync="false" src="{{BaseAppLibScriptLink}}"></script> -->
 	</head>
 	<body>
 		<div id="rl-app"></div>
@@ -31,5 +35,19 @@
 		{{BaseAppBodyScript}}
 		<script type="text/javascript" data-cfasync="false" src="{{BaseAppBootScriptLink}}"></script>
 		<script type="text/javascript" data-cfasync="false" src="{{BaseAppSelectUsersScriptLink}}"></script>
+		<div class="jqmWindow" id="rainloop_mailEditor_1">
+			<div>
+				<div class="jqmHeader">
+					<button type="button" class="close jqmClose" data-bind="command: cancelCommand">&times;</button>
+					<h4>
+						<span class="i18n">选择联系人</span>
+					</h4>
+				</div>
+				<div class="jqmBody">
+					<iframe id="mail-for-sign" class="hide"></iframe>
+					<iframe id="contactSelector" class="jqmIframe"></iframe>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

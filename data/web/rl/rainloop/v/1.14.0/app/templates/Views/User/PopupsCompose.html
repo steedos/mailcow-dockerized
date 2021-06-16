@@ -35,15 +35,15 @@
 										data-bind="text: currentIdentityView, dropdownCloser: true, css: {'multiply': 1 < identitiesOptions().length }">
 									</a>
 									<!-- ko if: 1 < identitiesOptions().length -->
-										<ul class="dropdown-menu g-ui-menu" role="menu" aria-labelledby="identity-label-id">
-											<!-- ko foreach: identitiesOptions -->
-												<li class="e-item" role="presentation">
-													<a class="e-link menuitem" tabindex="-1" href="javascript:void(0);" data-bind="click: function (oIdentity) { $root.selectIdentity(oIdentity); return true; }">
-														<span data-bind="text: optText"></span>
-													</a>
-												</li>
-											<!-- /ko -->
-										</ul>
+									<ul class="dropdown-menu g-ui-menu" role="menu" aria-labelledby="identity-label-id">
+										<!-- ko foreach: identitiesOptions -->
+										<li class="e-item" role="presentation">
+											<a class="e-link menuitem" tabindex="-1" href="javascript:void(0);" data-bind="click: function (oIdentity) { $root.selectIdentity(oIdentity); return true; }">
+												<span data-bind="text: optText"></span>
+											</a>
+										</li>
+										<!-- /ko -->
+									</ul>
 									<!-- /ko -->
 								</div>
 								<div class="pull-right">
@@ -109,7 +109,7 @@
 						<div class="e-row">
 							<div class="e-cell e-label">
 								<label class="control-label" data-bind="css: {'error-to': emptyToError}">
-									<span class="i18n" data-i18n="COMPOSE/TITLE_TO" data-tooltip-join="top"
+									<span class="i18n jqModal" data-i18n="COMPOSE/TITLE_TO" data-tooltip-join="top" 
 										data-bind="tooltipErrorTip: emptyToErrorTooltip" id="rainloop_mailEditor"></span>
 								</label>
 							</div>
@@ -119,7 +119,8 @@
 						</div>
 						<div class="e-row cc-row" data-bind="visible: showCc" id="rainloop_mailEditor">
 							<div class="e-cell e-label">
-								<span class="i18n" data-i18n="COMPOSE/TITLE_CC"></span>
+								<!-- <span class="i18n" data-i18n="COMPOSE/TITLE_CC"></span> -->
+								<span class="i18n jqModal" data-i18n="COMPOSE/TITLE_CC"></span>
 							</div>
 							<div class="e-cell e-value">
 								<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="emailsTags: cc, autoCompleteSource: emailsSource" />
@@ -127,7 +128,8 @@
 						</div>
 						<div class="e-row bcc-row" data-bind="visible: showBcc" id="rainloop_mailEditor">
 							<div class="e-cell e-label">
-								<span class="i18n" data-i18n="COMPOSE/TITLE_BCC"></span>
+								<!-- <span class="i18n" data-i18n="COMPOSE/TITLE_BCC"></span> -->
+								<span class="i18n jqModal" data-i18n="COMPOSE/TITLE_BCC"></span>
 							</div>
 							<div class="e-cell e-value">
 								<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="emailsTags: bcc, autoCompleteSource: emailsSource" />
@@ -135,7 +137,8 @@
 						</div>
 						<div class="e-row reply-to-row" data-bind="visible: showReplyTo" id="rainloop_mailEditor">
 							<div class="e-cell e-label">
-								<span class="i18n" data-i18n="COMPOSE/TITLE_REPLY_TO"></span>
+								<!-- <span class="i18n" data-i18n="COMPOSE/TITLE_REPLY_TO"></span> -->
+								<span class="i18n jqModal" data-i18n="COMPOSE/TITLE_REPLY_TO"></span>
 							</div>
 							<div class="e-cell e-value">
 								<input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="emailsTags: replyTo, autoCompleteSource: emailsSource" />
@@ -173,17 +176,17 @@
 									<div class="pull-right" style="margin-right: 4px;">
 										<div class="btn-group pull-right">
 											<a class="btn first" data-tooltip-join="bottom"
-												style="padding-left: 10px; padding-right: 10px;"
+												style="padding-left: 10px; padding-right: 10px;" 
 												data-bind="visible: addAttachmentEnabled(), initDom: composeUploaderButton, tooltip: 'COMPOSE/ATTACH_FILES',
 													css: {'last': !(driveEnabled() && driveVisible()) && !(dropboxEnabled())}">
 												<sup style="font-weight: bold; font-size: 100%; top: -0.3em;">+</sup><i class="icon-attachment"></i>
 											</a>
-											<a class="btn" data-tooltip-join="bottom"
+											<a class="btn" data-tooltip-join="bottom" 
 												data-bind="visible: dropboxEnabled, command: dropboxCommand, tooltip: 'COMPOSE/DROPBOX',
 													css: {'first': !addAttachmentEnabled(), 'last': !(driveEnabled() && driveVisible())}">
 												<i class="icon-dropbox"></i>
 											</a>
-											<a class="btn last" data-tooltip-join="bottom"
+											<a class="btn last" data-tooltip-join="bottom" 
 												data-bind="visible: driveEnabled() && driveVisible(), command: driveCommand, tooltip: 'COMPOSE/GOOGLE_DRIVE',
 													css: {'first': !addAttachmentEnabled() && !(driveEnabled() && driveVisible())}">
 												<i class="icon-google-drive"></i>

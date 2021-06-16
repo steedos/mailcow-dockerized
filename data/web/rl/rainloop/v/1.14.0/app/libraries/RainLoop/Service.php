@@ -308,15 +308,18 @@ class Service
 			'{{BaseAppFaviconPngLinkTag}}' => $sFaviconPngLink ? '<link type="image/png" rel="shortcut icon" href="'.$sFaviconPngLink.'" />' : '',
 			'{{BaseAppFaviconTouchLinkTag}}' => $sAppleTouchLink ? '<link type="image/png" rel="apple-touch-icon" href="'.$sAppleTouchLink.'" />' : '',
 			'{{BaseAppMainCssLink}}' => $this->staticPath('css/app'.($bAppCssDebug ? '' : '.min').'.css'),
+			'{{BaseAppJqModalCssLink}}' => $this->staticPath('css/jqModal'.'.css'),
 			'{{BaseAppThemeCssLink}}' => $this->oActions->ThemeLink($sTheme, $bAdmin),
 			'{{BaseAppPolyfillsScriptLink}}' => $this->staticPath('js/'.($bAppJsDebug ? '' : 'min/').'polyfills'.($bAppJsDebug ? '' : '.min').'.js'),
 			'{{BaseAppBootScriptLink}}' => $this->staticPath('js/'.($bAppJsDebug ? '' : 'min/').'boot'.($bAppJsDebug ? '' : '.min').'.js'),
+			'{{BaseAppLibScriptLink}}' => $this->staticPath('js/'.'min/'.'jq.min.js'),
 			'{{BaseViewport}}' => $bMobile ? 'width=device-width,initial-scale=1,user-scalable=no' : 'width=950,maximum-scale=2',
 			'{{BaseContentSecurityPolicy}}' => $sContentSecurityPolicy ?
 				'<meta http-equiv="Content-Security-Policy" content="'.$sContentSecurityPolicy.'" />' : '',
 			'{{BaseDir}}' => false && \in_array($sLanguage, array('ar', 'he', 'ur')) ? 'rtl' : 'ltr',
 			'{{BaseAppManifestLink}}' => $this->staticPath('manifest.json'),
 			'{{BaseAppSelectUsersScriptLink}}' => $this->staticPath('js/'.'select_users'.'.js'),
+			'{{BaseAppJqModalScriptLink}}' => $this->staticPath('js/'.'jqModal'.'.js'),
 			'{{BaseAppAngularScriptLink}}' => $this->staticPath('js/'.'min/'.'angular'.'.min'.'.js')
 		);
 

@@ -6898,7 +6898,7 @@ input::-ms-reveal {
 }
 #rl-center {
   position: absolute;
-  top: 0;
+  top: 30px;
   right: 0;
   bottom: 0;
   left: 0;
